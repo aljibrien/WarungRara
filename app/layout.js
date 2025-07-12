@@ -16,9 +16,6 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Warung Rara",
   description: "Warung Sederhana, Enak dan Murah",
-  icons: {
-    icon: "/logo.jpg", // atau "/favicon.png"
-  },
 };
 
 export default function RootLayout({ children }) {

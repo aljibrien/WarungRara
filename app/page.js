@@ -49,7 +49,7 @@ export default function Home() {
 
             {/* Ikon Media Sosial */}
             <div className="mb-3">
-              <a href="https://www.instagram.com/warungraraa?igsh=OWd0YWxjNmZrbDIy" target="_blank" className="me-3 text-decoration-none text-dark fs-5">
+              <a href="https://www.instagram.com/warungraraa?igsh=OWd0YWxjNmZrbDIy" target="_blank" className="me-3 text-decoration-none text-secondary fs-5">
                 <i className="bi bi-instagram"></i>
               </a>
               {/* Tambah ikon lain kalau perlu */}
