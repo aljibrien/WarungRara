@@ -1,0 +1,85 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "nama": "Ayam Kecap",
+      "harga": 5000,
+      "gambar": "/menu/ayamkecap.jpeg",
+      "deskripsi": "Ayam Kecap ENAKKK andalan yang buat ini website",
+      "tampil": true
+    },
+    {
+      "id": 2,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    },
+    {
+      "id": 3,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    },
+    {
+      "id": 4,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": true
+    },
+    {
+      "id": 5,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    },
+    {
+      "id": 6,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    },
+    {
+      "id": 7,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    },
+    {
+      "id": 8,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    },
+    {
+      "id": 9,
+      "nama": "Perkedel",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    },
+    {
+      "id": 10,
+      "nama": "Ayam Kecap",
+      "harga": 12000,
+      "gambar": "/default.png",
+      "deskripsi": "Mie ayam lezat dengan pangsit",
+      "tampil": false
+    }
+  ],
+  "updatedAt": "2025-07-12T07:49:09.198Z"
+}
