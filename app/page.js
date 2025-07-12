@@ -57,7 +57,7 @@ export default function Home() {
 
             {/* Tombol WhatsApp */}
             <a
-              href="https://wa.me/6281234567890?text=Halo%20Warung%20Rara%2C%20saya%20mau%20tanya%20menu"
+              href="https://wa.me/6282192974537?text=Halo%20Warung%20Rara%2C%20saya%20mau%20tanya%20menu"
               className="btn btn-danger rounded-pill px-4 py-2"
               target="_blank"
             >
