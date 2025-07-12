@@ -67,6 +67,18 @@ a {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.668);
 }
 
+.scroll-x {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.scroll-x table {
+  min-width: 800px; /* atau sesuai kebutuhan */
+}
+
+.custom-placeholder::placeholder {
+  color: rgba(255, 255, 255, 0.5); /* putih semi-transparan */
+}
 
 @media (prefers-color-scheme: dark) {
   html {

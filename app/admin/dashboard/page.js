@@ -7,6 +7,7 @@ import Image from 'next/image';
 
 export default function AdminDashboard() {
   const [menus, setMenus] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [updatedAt, setUpdatedAt] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -78,9 +79,15 @@ export default function AdminDashboard() {
     }
   };
 
-
-
   if (loading) return <div className="p-4">Memuat data...</div>;
+
+  
+
+  const filteredMenus = menus.filter(menu =>
+    menu.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    menu.deskripsi?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 
   return (
     <>
@@ -89,7 +96,19 @@ export default function AdminDashboard() {
         <h3>Dashboard Admin</h3>
         <p>Update terakhir: {new Date(updatedAt).toLocaleString('id-ID')}</p>
 
-        <div className="table-responsive">
+        <div className="row">
+          <div className="col-md-6">
+            <input
+              type="text"
+              className="form-control bg-dark text-white border-secondary custom-placeholder mt-3"
+              placeholder="Cari menu..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="scroll-x">
           <table className="table table-bordered mt-4">
             <thead className="table-dark">
               <tr>
@@ -100,7 +119,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {menus.map((menu, index) => (
+              {filteredMenus.map((menu, index) => (
                 <tr key={menu.id}>
                   <td className='text-center'>
                     <Image

@@ -7,6 +7,7 @@ export default function Home() {
   const [menus, setMenus] = useState([]);
   const [updatedAt, setUpdatedAt] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const itemsPerPage = 8;
 
@@ -20,8 +21,14 @@ export default function Home() {
       });
   }, []);
 
-  const totalPages = Math.ceil(menus.length / itemsPerPage);
-  const currentMenus = menus.slice(
+  // ✅ Filter data berdasarkan search term
+  const filteredMenus = menus.filter(menu =>
+    menu.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    menu.deskripsi.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
+  const currentMenus = filteredMenus.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -84,6 +91,22 @@ export default function Home() {
         <h3 className="mb-3 fw-bold text-orange">Menu Tersedia Hari Ini</h3>
         <hr className="w-25" />
         <small className="text-info d-flex justify-content-end">{formatWaktu}</small>
+
+        {/* ✅ Input pencarian */}
+        <div className="row mt-3">
+          <div className="col-md-6">
+            <input
+              type="text"
+              className="form-control bg-dark text-white border-secondary custom-placeholder"
+              placeholder="Cari menu..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // reset ke page 1 saat cari
+              }}
+            />
+          </div>
+        </div>
 
         {currentMenus.length === 0 ? (
           <div className="alert alert-warning text-center mt-4">
@@ -165,35 +188,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      {/* <footer className="bg-dark text-white mt-5 py-4">
-        <div className="container text-center">
-          <p className="mb-1 fw-bold text-orange">Warung Rara</p>
-          <p className="mb-2 small">
-            Antang, Kec. Manggala, Kota Makassar, Sulawesi Selatan 90234
-          </p>
-          <div className="mb-2">
-            <a
-              href="https://www.instagram.com/warungraraa?igsh=OWd0YWxjNmZrbDIy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white me-3"
-            >
-              <i className="bi bi-instagram"></i>
-            </a>
-            <a
-              href="https://wa.me/6281234567890?text=Halo%20Warung%20Rara%2C%20saya%20mau%20tanya%20menu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white"
-            >
-              <i className="bi bi-whatsapp"></i>
-            </a>
-          </div>
-          <small className="text-white">&copy; {new Date().getFullYear()} Warung Rara. All rights reserved.</small>
-        </div>
-      </footer> */}
     </>
   );
 }
