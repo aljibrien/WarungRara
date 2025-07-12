@@ -61,16 +61,23 @@ export default function AdminDashboard() {
       body: JSON.stringify({ items: menus }),
     });
 
+    const result = await res.json();
+    console.log("🧾 HASIL RESPONSE:", result);
+
     if (res.ok) {
       setShowModal(true);
+
       setTimeout(() => {
         setShowModal(false);
-        router.push('/');
+        router.refresh(); // ✅ ini trigger re-fetch data
+        // atau panggil ulang fetchMenu() di sini jika kamu refactor jadi fungsi terpisah
+        router.push('/')
       }, 1000);
     } else {
       alert('Gagal menyimpan!');
     }
   };
+
 
 
   if (loading) return <div className="p-4">Memuat data...</div>;

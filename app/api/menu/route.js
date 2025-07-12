@@ -24,18 +24,28 @@ export async function GET() {
 export async function PUT(request) {
   const { items } = await request.json();
 
-  const updates = items.map(item =>
-    supabase
+  console.log("🔄 DITERIMA UNTUK UPDATE:", items);
+
+  const results = [];
+
+  for (const item of items) {
+    console.log(`📝 Update item id=${item.id}, tampil=${item.tampil}`);
+
+    const { data, error } = await supabase
       .from('menu')
       .update({ tampil: item.tampil })
       .eq('id', item.id)
-  );
+      .select(); // pakai select biar kelihatan hasilnya
 
-  const results = await Promise.allSettled(updates);
+    console.log("📤 Response update:", { data, error });
 
-  const hasError = results.some(r => r.status === 'rejected');
+    results.push({ id: item.id, data, error });
+  }
+
+  const hasError = results.some(r => r.error);
 
   if (hasError) {
+    console.error("❌ Ada error saat update:", results);
     return Response.json({ error: 'Gagal memperbarui data' }, { status: 500 });
   }
 
