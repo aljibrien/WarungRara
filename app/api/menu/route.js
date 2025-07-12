@@ -1,22 +1,43 @@
-import fs from 'fs';
-import path from 'path';
+// app/api/menu/route.js
+import { supabase } from '@/lib/supabase';
 
+export async function GET() {
+  const { data, error } = await supabase
+    .from('menu') // pastikan ini nama tabel benar persis
+    .select('*');
 
-export async function PUT(req) {
-  const data = await req.json(); // { updatedAt, items }
-  const filePath = path.join(process.cwd(), 'data', 'menu.json');
+  console.log("📦 DATA:", data);
+  console.log("❌ ERROR:", error);
 
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { 'Content-Type': 'application/json' }
+  return Response.json({
+    items: data ?? [],
+    updatedAt: new Date().toISOString(),
   });
 }
 
-export async function GET() {
-  const filePath = path.join(process.cwd(), 'data', 'menu.json');
-  const data = fs.readFileSync(filePath, 'utf-8');
-  return new Response(data, {
-    headers: { 'Content-Type': 'application/json' }
-  });
+
+
+export async function PUT(request) {
+  const { items } = await request.json();
+
+  const updates = items.map(item =>
+    supabase
+      .from('menu')
+      .update({ tampil: item.tampil })
+      .eq('id', item.id)
+  );
+
+  const results = await Promise.allSettled(updates);
+
+  const hasError = results.some(r => r.status === 'rejected');
+
+  if (hasError) {
+    return Response.json({ error: 'Gagal memperbarui data' }, { status: 500 });
+  }
+
+  return Response.json({ success: true });
 }

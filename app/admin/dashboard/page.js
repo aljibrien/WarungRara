@@ -23,13 +23,22 @@ export default function AdminDashboard() {
     };
 
     checkLogin();
+    
     const fetchMenu = async () => {
-      const res = await fetch('/api/menu');
-      const data = await res.json();
-      setMenus(data.items);
-      setUpdatedAt(data.updatedAt);
-      setLoading(false);
+      try {
+        const res = await fetch('/api/menu');
+        const data = await res.json();
+        console.log("👉 DATA FETCHED:", data);
+
+        setMenus(data.items ?? []);         // fallback aman jika items = undefined
+        setUpdatedAt(data.updatedAt ?? null); // fallback juga
+      } catch (err) {
+        console.error("❌ Gagal fetch menu:", err);
+      } finally {
+        setLoading(false); // ini tetap dijalankan, sukses atau gagal
+      }
     };
+
 
     fetchMenu();
   }, []);
@@ -48,21 +57,12 @@ export default function AdminDashboard() {
   const handleSave = async () => {
     const res = await fetch('/api/menu', {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        items: menus,
-        updatedAt: new Date().toISOString(),
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: menus }),
     });
 
     if (res.ok) {
-      const updated = await res.json();
-      setUpdatedAt(updated.updatedAt);
       setShowModal(true);
-
-      // ⏳ Tunggu 2 detik lalu redirect
       setTimeout(() => {
         setShowModal(false);
         router.push('/');
@@ -71,6 +71,7 @@ export default function AdminDashboard() {
       alert('Gagal menyimpan!');
     }
   };
+
 
   if (loading) return <div className="p-4">Memuat data...</div>;
 
@@ -99,8 +100,8 @@ export default function AdminDashboard() {
                       src={menu.gambar}
                       alt={menu.nama}
                       width={60}
-                      height={60} // tambahkan height agar tidak error
-                      style={{ objectFit: 'cover', borderRadius: '4px' }} // opsional: biar rapi
+                      height={60} 
+                      style={{ objectFit: 'cover', borderRadius: '4px' }}
                     />
 
                   </td>
@@ -124,10 +125,13 @@ export default function AdminDashboard() {
 
         <div className="d-flex gap-2 mt-3">
           <button className="btn btn-warning" onClick={handleHideAll}>
-            Jangan Tampilkan Semua
+            Jgn Tampilkan Semua
           </button>
           <button className="btn btn-success" onClick={handleSave}>
             Simpan Perubahan
+          </button>
+          <button className="btn btn-outline-secondary" onClick={() => router.push('/')}>
+            ← Kembali
           </button>
         </div>
       </div>

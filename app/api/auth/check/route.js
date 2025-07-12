@@ -1,7 +1,11 @@
-// app/api/auth/check/route.js
-import { getSession } from '@/lib/session';
+import { getSession } from "@/lib/session";
 
 export async function GET() {
-  const session = await getSession();
-  return Response.json({ loggedIn: !!session.user });
+  const session = await getSession(); // ✅ pastikan pakai await
+
+  if (session.user) {
+    return Response.json({ loggedIn: true });
+  } else {
+    return Response.json({ loggedIn: false });
+  }
 }

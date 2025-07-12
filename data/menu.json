@@ -14,7 +14,7 @@
       "harga": 12000,
       "gambar": "/default.png",
       "deskripsi": "Mie ayam lezat dengan pangsit",
-      "tampil": false
+      "tampil": true
     },
     {
       "id": 3,
@@ -81,5 +81,5 @@
       "tampil": false
     }
   ],
-  "updatedAt": "2025-07-12T07:49:09.198Z"
+  "updatedAt": "2025-07-12T09:50:24.907Z"
 }
