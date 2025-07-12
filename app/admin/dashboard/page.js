@@ -13,6 +13,16 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   useEffect(() => {
+      const checkLogin = async () => {
+      const res = await fetch('/api/auth/check'); // endpoint baru untuk cek login
+      const data = await res.json();
+
+      if (!data.loggedIn) {
+        router.push('/admin/login'); // redirect ke login
+      }
+    };
+
+    checkLogin();
     const fetchMenu = async () => {
       const res = await fetch('/api/menu');
       const data = await res.json();

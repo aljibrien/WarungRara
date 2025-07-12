@@ -55,7 +55,7 @@ export default function LoginPage() {
           <button
             type="button"
             className="btn btn-outline-secondary w-50"
-            onClick={() => router.back()}
+            onClick={() => router.push('/')}
           >
             ← Kembali
           </button>
