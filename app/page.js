@@ -9,6 +9,12 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const sekarang = new Date();
+  const jamSekarang = sekarang.getHours();
+  const menitSekarang = sekarang.getMinutes();
+  const sudahTutup = jamSekarang > 17 || (jamSekarang === 17 && menitSekarang >= 0);
+
+
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -44,8 +50,39 @@ export default function Home() {
   return (
     <>
     <Navbar />
+
+    {/* Info buka/tutup warung */}
+    <div className="container mt-3">
+      <div className="d-flex align-items-center gap-2">
+        <span
+          className={`d-inline-block rounded-circle`}
+          style={{
+            width: '12px',
+            height: '12px',
+            backgroundColor:
+              menus.length === 0
+                ? '#dc3545' // merah
+                : jamSekarang < 8
+                ? '#ffc107' // kuning
+                : jamSekarang >= 17
+                ? '#dc3545' // merah
+                : '#28a745', // hijau
+          }}
+        ></span>
+        <span className="fw-semibold small">
+          {menus.length === 0
+            ? 'Warung TUTUP (karena menu habis)'
+            : jamSekarang < 8
+            ? 'Warung BELUM BUKA (Jam buka 08:00 - 17:00)'
+            : jamSekarang >= 17
+            ? 'Warung SUDAH TUTUP (Jam buka 08:00 - 17:00)'
+            : 'Warung BUKA - Silakan pesan sekarang!'}
+        </span>
+      </div>
+    </div>
+    
       {/* Hero Section / Deskripsi Warung */}
-      <div className="container py-5">
+      <div className="container py-3">
         <div className="row flex-column-reverse flex-md-row align-items-center">
           {/* Kolom Kiri: Teks */}
           <div className="col-md-6 mb-4 mb-md-0">
@@ -108,11 +145,13 @@ export default function Home() {
           </div>
         </div>
 
-        {currentMenus.length === 0 ? (
-          <div className="alert alert-warning text-center mt-4">
-            Belum ada menu yang tersedia hari ini.
+        {(sudahTutup || menus.length === 0) ? (
+          <div className={`alert text-center mt-4 ${sudahTutup ? 'alert-danger' : 'alert-warning'}`}>
+            {sudahTutup
+              ? 'Warung sudah tutup. Silakan kembali lagi besok!'
+              : 'Belum ada menu yang tersedia hari ini.'}
           </div>
-        ) : (
+          ) : (
           <>
             <div className="row mt-3">
               {currentMenus.map(menu => (
