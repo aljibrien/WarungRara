@@ -73,7 +73,7 @@ a {
 }
 
 .scroll-x table {
-  min-width: 800px; /* atau sesuai kebutuhan */
+  min-width: 580px; /* atau sesuai kebutuhan */
 }
 
 .custom-placeholder::placeholder {

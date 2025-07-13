@@ -128,27 +128,15 @@ export default function AdminDashboard() {
           <table className="table table-bordered mt-4">
             <thead className="table-primary">
               <tr>
-                <th className='text-center'>Gambar</th>
+                <th>Tampil</th>
                 <th>Nama</th>
                 <th>Harga</th>
-                <th>Tampil</th>
+                <th className='text-center'>Gambar</th>
               </tr>
             </thead>
             <tbody className='table-dark'>
               {filteredMenus.map((menu, index) => (
                 <tr key={menu.id}>
-                  <td className='text-center'>
-                    <Image
-                      src={menu.gambar}
-                      alt={menu.nama}
-                      width={60}
-                      height={60} 
-                      style={{ objectFit: 'cover', borderRadius: '4px' }}
-                    />
-
-                  </td>
-                  <td>{menu.nama}</td>
-                  <td>Rp {menu.harga.toLocaleString()}</td>
                   <td>
                     <select
                       className="form-select"
@@ -159,13 +147,24 @@ export default function AdminDashboard() {
                       <option value="false">Tidak</option>
                     </select>
                   </td>
+                  <td>{menu.nama}</td>
+                  <td>Rp {menu.harga.toLocaleString()}</td>
+                  <td className='text-center'>
+                    <Image
+                      src={menu.gambar}
+                      alt={menu.nama}
+                      width={60}
+                      height={60} 
+                      style={{ objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <div className="d-flex gap-2 mt-3">
+        <div className="d-flex flex-wrap gap-2 mt-3">
           <button className="btn btn-warning" onClick={handleHideAll}>
             Jgn Tampilkan Semua
           </button>
