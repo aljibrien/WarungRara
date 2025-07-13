@@ -13,10 +13,21 @@ export async function GET() {
     return Response.json({ error: error.message }, { status: 500 });
   }
 
+  const { data: pengaturan, error: err2 } = await supabase
+    .from('pengaturan')
+    .select('updated_at')
+    .eq('id', 1)
+    .single();
+    
+  if (err2) {
+    return Response.json({ error: err2.message }, { status: 500 });
+  }
+
   return Response.json({
     items: data ?? [],
-    updatedAt: new Date().toISOString(),
+    updatedAt: pengaturan?.updated_at ?? null,
   });
+
 }
 
 
@@ -35,7 +46,7 @@ export async function PUT(request) {
       .from('menu')
       .update({ tampil: item.tampil })
       .eq('id', item.id)
-      .select(); // pakai select biar kelihatan hasilnya
+      .select();
 
     console.log("📤 Response update:", { data, error });
 
@@ -48,6 +59,11 @@ export async function PUT(request) {
     console.error("❌ Ada error saat update:", results);
     return Response.json({ error: 'Gagal memperbarui data' }, { status: 500 });
   }
+
+  await supabase
+    .from('pengaturan')
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', 1);
 
   return Response.json({ success: true });
 }

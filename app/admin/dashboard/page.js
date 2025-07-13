@@ -13,13 +13,22 @@ export default function AdminDashboard() {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
+  const formatWaktu = (waktuString) =>
+    waktuString
+      ? new Intl.DateTimeFormat('id-ID', {
+          dateStyle: 'long',
+          timeStyle: 'short',
+          timeZone: 'Asia/Makassar',
+        }).format(new Date(waktuString))
+      : '-';
+
   useEffect(() => {
       const checkLogin = async () => {
-      const res = await fetch('/api/auth/check'); // endpoint baru untuk cek login
+      const res = await fetch('/api/auth/check');
       const data = await res.json();
 
       if (!data.loggedIn) {
-        router.push('/admin/login'); // redirect ke login
+        router.push('/admin/login'); 
       }
     };
 
@@ -31,12 +40,12 @@ export default function AdminDashboard() {
         const data = await res.json();
         console.log("👉 DATA FETCHED:", data);
 
-        setMenus(data.items ?? []);         // fallback aman jika items = undefined
-        setUpdatedAt(data.updatedAt ?? null); // fallback juga
+        setMenus(data.items ?? []);    
+        setUpdatedAt(data.updatedAt ?? null); 
       } catch (err) {
         console.error("❌ Gagal fetch menu:", err);
       } finally {
-        setLoading(false); // ini tetap dijalankan, sukses atau gagal
+        setLoading(false); 
       }
     };
 
@@ -70,8 +79,8 @@ export default function AdminDashboard() {
 
       setTimeout(() => {
         setShowModal(false);
-        router.refresh(); // ✅ ini trigger re-fetch data
-        // atau panggil ulang fetchMenu() di sini jika kamu refactor jadi fungsi terpisah
+        router.refresh();
+
         router.push('/')
       }, 1000);
     } else {
@@ -94,7 +103,7 @@ export default function AdminDashboard() {
       <AdminNavbar />
       <div className="container py-4">
         <h3>Dashboard Admin</h3>
-        <p>Update terakhir: {new Date(updatedAt).toLocaleString('id-ID')}</p>
+        <p>Update terakhir: {formatWaktu(updatedAt)}</p>
 
         <div className="row">
           <div className="col-md-6">
