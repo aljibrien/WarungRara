@@ -12,6 +12,7 @@ export default function AdminDashboard() {
   const [updatedAt, setUpdatedAt] = useState('');
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+  const [isSaving, setIsSaving] = useState(false);
 
   const formatWaktu = (waktuString) =>
     waktuString
@@ -53,9 +54,10 @@ export default function AdminDashboard() {
     fetchMenu();
   }, []);
 
-  const handleChangeTampil = (index, value) => {
-    const updatedMenus = [...menus];
-    updatedMenus[index].tampil = value === 'true';
+  const handleChangeTampil = (id, value) => {
+    const updatedMenus = menus.map(menu =>
+      menu.id === id ? { ...menu, tampil: value === 'true' } : menu
+    );
     setMenus(updatedMenus);
   };
 
@@ -65,6 +67,7 @@ export default function AdminDashboard() {
   };
 
   const handleSave = async () => {
+    setIsSaving(true);
     const res = await fetch('/api/menu', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -79,14 +82,18 @@ export default function AdminDashboard() {
 
       setTimeout(() => {
         setShowModal(false);
+        setIsSaving(false);
         router.refresh();
-
         router.push('/')
       }, 1000);
     } else {
+      setIsSaving(false);
       alert('Gagal menyimpan!');
     }
   };
+
+  
+
 
   if (loading) return <div className="p-4">Memuat data...</div>;
 
@@ -119,7 +126,7 @@ export default function AdminDashboard() {
 
         <div className="scroll-x">
           <table className="table table-bordered mt-4">
-            <thead className="table-dark">
+            <thead className="table-primary">
               <tr>
                 <th className='text-center'>Gambar</th>
                 <th>Nama</th>
@@ -127,7 +134,7 @@ export default function AdminDashboard() {
                 <th>Tampil</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className='table-dark'>
               {filteredMenus.map((menu, index) => (
                 <tr key={menu.id}>
                   <td className='text-center'>
@@ -146,7 +153,7 @@ export default function AdminDashboard() {
                     <select
                       className="form-select"
                       value={menu.tampil ? 'true' : 'false'}
-                      onChange={e => handleChangeTampil(index, e.target.value)}
+                      onChange={e => handleChangeTampil(menu.id, e.target.value)}
                     >
                       <option value="true">Ya</option>
                       <option value="false">Tidak</option>
@@ -162,8 +169,15 @@ export default function AdminDashboard() {
           <button className="btn btn-warning" onClick={handleHideAll}>
             Jgn Tampilkan Semua
           </button>
-          <button className="btn btn-success" onClick={handleSave}>
-            Simpan Perubahan
+          <button className="btn btn-success" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Menyimpan...
+              </>
+            ) : (
+              'Simpan Perubahan'
+            )}
           </button>
           <button className="btn btn-outline-secondary" onClick={() => router.push('/')}>
             ← Kembali
