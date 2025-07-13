@@ -53,17 +53,17 @@ export default function Home() {
     let statusWarung = '';
     let warnaStatus = '';
 
-    if (menus.length === 0) {
-      statusWarung = 'Warung TUTUP';
+    if (setelahTutup) {
+      statusWarung = 'Warung TUTUP (17:00 - 08:30)';
       warnaStatus = '#dc3545'; // merah
     } else if (sebelumBuka) {
       statusWarung = 'Warung BELUM BUKA (08:30 - 17:00)';
       warnaStatus = '#ffc107'; // kuning
-    } else if (setelahTutup) {
-      statusWarung = 'Warung TUTUP (08:30 - 17:00)';
+    } else if (menus.length === 0) {
+      statusWarung = 'Warung TUTUP (Menu Habis/Tidak Ada)';
       warnaStatus = '#dc3545'; // merah
     } else {
-      statusWarung = 'Warung BUKA';
+      statusWarung = 'Warung BUKA (08:30 - 17:00)';
       warnaStatus = '#28a745'; // hijau
     }
 
