@@ -11,9 +11,12 @@ export default function Home() {
 
   const sekarang = new Date();
   const jamSekarang = sekarang.getHours();
-  const menitSekarang = sekarang.getMinutes();
-  const sudahTutup = jamSekarang > 17 || (jamSekarang === 17 && menitSekarang >= 0);
-
+  const menitSekarang = sekarang.getMinutes();  
+  
+  // Warung buka jam 08:30 dan tutup jam 17:00
+  const sebelumBuka = jamSekarang < 8 || (jamSekarang === 8 && menitSekarang < 30);
+  const setelahTutup = jamSekarang > 17 || (jamSekarang === 17 && menitSekarang >= 0);
+  const sedangTutup = sebelumBuka || setelahTutup;
 
   const itemsPerPage = 8;
 
@@ -47,40 +50,42 @@ export default function Home() {
       }).format(new Date(updatedAt))
     : '';
 
+    let statusWarung = '';
+    let warnaStatus = '';
+
+    if (menus.length === 0) {
+      statusWarung = 'Warung TUTUP';
+      warnaStatus = '#dc3545'; // merah
+    } else if (sebelumBuka) {
+      statusWarung = 'Warung BELUM BUKA (08:30 - 17:00)';
+      warnaStatus = '#ffc107'; // kuning
+    } else if (setelahTutup) {
+      statusWarung = 'Warung TUTUP (08:30 - 17:00)';
+      warnaStatus = '#dc3545'; // merah
+    } else {
+      statusWarung = 'Warung BUKA';
+      warnaStatus = '#28a745'; // hijau
+    }
+
   return (
     <>
-    <Navbar />
+      <Navbar />
 
-    {/* Info buka/tutup warung */}
-    <div className="container mt-3">
-      <div className="d-flex align-items-center gap-2">
-        <span
-          className={`d-inline-block rounded-circle`}
-          style={{
-            width: '12px',
-            height: '12px',
-            backgroundColor:
-              menus.length === 0
-                ? '#dc3545' // merah
-                : jamSekarang < 8
-                ? '#ffc107' // kuning
-                : jamSekarang >= 17
-                ? '#dc3545' // merah
-                : '#28a745', // hijau
-          }}
-        ></span>
-        <span className="fw-semibold small">
-          {menus.length === 0
-            ? 'Warung TUTUP (karena menu habis)'
-            : jamSekarang < 8
-            ? 'Warung BELUM BUKA (Jam buka 08:00 - 17:00)'
-            : jamSekarang >= 17
-            ? 'Warung SUDAH TUTUP (Jam buka 08:00 - 17:00)'
-            : 'Warung BUKA - Silakan pesan sekarang!'}
-        </span>
+      {/* Info buka/tutup warung */}
+      <div className="container mt-3">
+        <div className="d-flex align-items-center gap-2">
+          <span
+            className="d-inline-block rounded-circle"
+            style={{
+              width: '12px',
+              height: '12px',
+              backgroundColor: warnaStatus,
+            }}
+          ></span>
+          <span className="fw-semibold small">{statusWarung}</span>
+        </div>
       </div>
-    </div>
-    
+
       {/* Hero Section / Deskripsi Warung */}
       <div className="container py-3">
         <div className="row flex-column-reverse flex-md-row align-items-center">
@@ -145,10 +150,10 @@ export default function Home() {
           </div>
         </div>
 
-        {(sudahTutup || menus.length === 0) ? (
-          <div className={`alert text-center mt-4 ${sudahTutup ? 'alert-danger' : 'alert-warning'}`}>
-            {sudahTutup
-              ? 'Warung sudah tutup. Silakan kembali lagi besok!'
+        {(sedangTutup || menus.length === 0) ? (
+          <div className={`alert text-center mt-4 ${sedangTutup ? 'alert-danger' : 'alert-warning'}`}>
+            {sedangTutup
+              ? 'Warung saat ini tutup. Silakan kembali lagi sesuai jam operasional.'
               : 'Belum ada menu yang tersedia hari ini.'}
           </div>
           ) : (
