@@ -10,10 +10,15 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [updatedAt, setUpdatedAt] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState({
+    show: false,
+    message: '',
+    type: '' // atau 'info', 'error', dll
+  });
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [libur, setLibur] = useState(false);
+  const [originalMenus, setOriginalMenus] = useState([]);
 
   const formatWaktu = (waktuString) =>
     waktuString
@@ -40,15 +45,15 @@ export default function AdminDashboard() {
       try {
         const res = await fetch('/api/menu');
         const data = await res.json();
-        console.log("👉 DATA FETCHED:", data);
 
-        setMenus(data.items ?? []);    
-        setUpdatedAt(data.updatedAt ?? null); 
+        setMenus(data.items ?? []);
+        setOriginalMenus(data.items ?? []);
+        setUpdatedAt(data.updatedAt ?? null);
         setLibur(data.libur);
       } catch (err) {
         console.error("❌ Gagal fetch menu:", err);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -69,36 +74,76 @@ export default function AdminDashboard() {
 
   const handleSave = async () => {
     setIsSaving(true);
+
+    const originalMap = Object.fromEntries(originalMenus.map(menu => [menu.id, menu]));
+
+    const menuBerubah = menus.filter(menu => {
+      const original = originalMap[menu.id];
+      return original && menu.tampil !== original.tampil;
+    });
+
+    let liburBerubah = false;
+    try {
+      const latest = await fetch('/api/menu').then(res => res.json());
+      liburBerubah = latest.libur !== libur;
+    } catch (err) {
+      console.error("Gagal cek status libur terbaru:", err);
+    }
+
+    // ✅ Jika tidak ada yang berubah
+    if (menuBerubah.length === 0 && !liburBerubah) {
+      setShowModal({
+        show: true,
+        message: "Tidak ada perubahan yang disimpan.",
+        type: "info"
+      });
+      // Tutup modal otomatis setelah 1 detik
+      setTimeout(() => {
+        setShowModal({ show: false, message: '', type: '' });
+        setIsSaving(false);
+      }, 2000);
+
+      return () => clearTimeout(timeoutId);
+    }
+
     const res = await fetch('/api/menu', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: menus, libur }),
+      body: JSON.stringify({ items: menuBerubah, libur }),
     });
 
     const result = await res.json();
     console.log("🧾 HASIL RESPONSE:", result);
 
     if (res.ok) {
-      setShowModal(true);
+      setShowModal({
+        show: true,
+        message: "Berhasil disimpan! Mengalihkan ke halaman utama...",
+        type: "success"
+      });
 
       setTimeout(() => {
-        setShowModal(false);
+        setShowModal({ show: false, message: '', type: '' });
         setIsSaving(false);
         router.refresh();
-        router.push('/')
-      }, 1000);
+        router.push('/');
+      }, 2000);
     } else {
+      setShowModal({
+        show: true,
+        message: "Gagal menyimpan data!",
+        type: "danger"
+      });
       setIsSaving(false);
-      alert('Gagal menyimpan!');
+      setTimeout(() => {
+        setShowModal({ show: false, message: '', type: '' });
+      }, 2000);
+
+      return () => clearTimeout(timeoutId);
     }
   };
 
-  
-
-
   if (loading) return <div className="p-4">Memuat data...</div>;
-
-  
 
   const filteredMenus = menus.filter(menu =>
     menu.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -197,14 +242,13 @@ export default function AdminDashboard() {
           </button>
         </div>
       </div>
-        {/* ✅ Modal Bootstrap */}
-        {showModal && (
+        {/* ✅ Modal Bootstrap dinamis */}
+        {showModal.show && (
           <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
             <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content bg-success text-white">
+              <div className={`modal-content bg-${showModal.type} text-white`}>
                 <div className="modal-body text-center py-4">
-                  <h5 className="mb-0">Berhasil disimpan!</h5>
-                  <p className="mb-0">Mengalihkan ke halaman utama...</p>
+                  <h5 className="mb-0">{showModal.message}</h5>
                 </div>
               </div>
             </div>
