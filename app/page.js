@@ -35,30 +35,32 @@ export default function Home() {
       .then(data => {
         const aktif = data.items.filter(item => item.tampil);
         setMenus(aktif);
-        setUpdatedAt(data.updatedAt);
+        setUpdatedAt(data.updatedAt ?? null);
         setLibur(data.libur);
       });
   }, []);
-
+    
   function waktuRelatif(updatedAt) {
-    const updated = new Date(updatedAt); // dari Supabase (UTC)
-    const now = new Date(
-      new Date().toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
-    );
+    if (!updatedAt) return '';
+
+    const updated = new Date(updatedAt); // Sudah UTC (ISO 8601)
+    const now = new Date(); // Ini UTC juga di JS backend/frontend modern
 
     const selisihDetik = Math.floor((now - updated) / 1000);
-
     const hari = Math.floor(selisihDetik / 86400);
     const jam = Math.floor((selisihDetik % 86400) / 3600);
     const menit = Math.floor((selisihDetik % 3600) / 60);
 
+    console.log('🕒 updatedAt:', updated);
+    console.log('🕒 now:', now);
+    console.log('⏱️ Selisih:', { hari, jam, menit });
+
     if (selisihDetik < 60) return 'baru saja';
-    if (menit < 60) return `${menit} menit yang lalu`;
-    if (jam < 24) return `${jam} jam yang lalu`;
+    if (selisihDetik < 3600) return `${menit} menit yang lalu`;
+    if (selisihDetik < 86400) return `${jam} jam yang lalu`;
     if (hari === 1) return 'kemarin';
     return `${hari} hari yang lalu`;
   }
-
 
 
 
