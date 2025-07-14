@@ -78,7 +78,7 @@ export default function Navbar() {
           </Link>
 
           <Link href="#menu" className="text-center text-decoration-none text-white small">
-            <i className="bi bi-list" style={{ fontSize: '20px' }}></i>
+            <i className="bi bi-fork-knife" style={{ fontSize: '20px' }}></i>
             <div>Menu</div>
           </Link>
 
