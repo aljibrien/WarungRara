@@ -20,8 +20,8 @@ export default function Home() {
   const menitSekarang = sekarang.getMinutes();  
   
   // Warung buka jam 08:30 dan tutup jam 17:00
-  const sebelumBuka = jamSekarang < 8 || (jamSekarang === 8 && menitSekarang < 30);
-  const setelahTutup = jamSekarang > 17 || (jamSekarang === 17 && menitSekarang >= 0);
+  const sebelumBuka = (jamSekarang >= 6 && jamSekarang < 8) || (jamSekarang === 8 && menitSekarang < 30);
+  const setelahTutup = jamSekarang > 17;
   const sedangTutup = sebelumBuka || setelahTutup;
 
   const itemsPerPage = 8;
@@ -75,7 +75,7 @@ export default function Home() {
       statusWarung = 'Warung Libur (Tidak Buka Hari Ini)';
       warnaStatus = '#6c757d';
     } else if (setelahTutup) {
-      statusWarung = 'Warung TUTUP (17:00 - 08:30)';
+      statusWarung = 'Warung TUTUP';
       warnaStatus = '#dc3545'; // merah
     } else if (sebelumBuka) {
       statusWarung = 'Warung BELUM BUKA (08:30 - 17:00)';
