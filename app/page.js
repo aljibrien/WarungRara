@@ -21,7 +21,7 @@ export default function Home() {
   
   // Warung buka jam 08:30 dan tutup jam 17:00
   const sebelumBuka = (jamSekarang >= 6 && jamSekarang < 8) || (jamSekarang === 8 && menitSekarang < 30);
-  const setelahTutup = jamSekarang > 17;
+  const setelahTutup = jamSekarang >= 17;
   const sedangTutup = sebelumBuka || setelahTutup;
 
   const itemsPerPage = 8;
