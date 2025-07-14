@@ -13,6 +13,7 @@ export default function AdminDashboard() {
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [libur, setLibur] = useState(false);
 
   const formatWaktu = (waktuString) =>
     waktuString
@@ -43,13 +44,13 @@ export default function AdminDashboard() {
 
         setMenus(data.items ?? []);    
         setUpdatedAt(data.updatedAt ?? null); 
+        setLibur(data.libur);
       } catch (err) {
         console.error("❌ Gagal fetch menu:", err);
       } finally {
         setLoading(false); 
       }
     };
-
 
     fetchMenu();
   }, []);
@@ -71,7 +72,7 @@ export default function AdminDashboard() {
     const res = await fetch('/api/menu', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: menus }),
+      body: JSON.stringify({ items: menus, libur }),
     });
 
     const result = await res.json();
@@ -122,6 +123,19 @@ export default function AdminDashboard() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+        </div>
+
+        <div className="form-check mt-3">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="liburCheckbox"
+            checked={libur}
+            onChange={(e) => setLibur(e.target.checked)}
+          />
+          <label className="form-check-label" htmlFor="liburCheckbox">
+            Warung Libur Hari Ini
+          </label>
         </div>
 
         <div className="scroll-x">

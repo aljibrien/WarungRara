@@ -8,6 +8,7 @@ export default function Home() {
   const [updatedAt, setUpdatedAt] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [libur, setLibur] = useState(false);
 
   const sekarang = useMemo(() => {
     return new Date(
@@ -32,6 +33,7 @@ export default function Home() {
         const aktif = data.items.filter(item => item.tampil);
         setMenus(aktif);
         setUpdatedAt(data.updatedAt);
+        setLibur(data.libur);
       });
   }, []);
 
@@ -69,7 +71,10 @@ export default function Home() {
     let statusWarung = '';
     let warnaStatus = '';
 
-    if (setelahTutup) {
+    if (libur) {
+      statusWarung = 'Warung Libur (Tidak Buka Hari Ini)';
+      warnaStatus = '#6c757d';
+    } else if (setelahTutup) {
       statusWarung = 'Warung TUTUP (17:00 - 08:30)';
       warnaStatus = '#dc3545'; // merah
     } else if (sebelumBuka) {
@@ -166,9 +171,11 @@ export default function Home() {
           </div>
         </div>
 
-        {(sedangTutup || menus.length === 0) ? (
-          <div className={`alert text-center mt-4 ${sedangTutup ? 'alert-danger' : 'alert-warning'}`}>
-            {sedangTutup
+        {(libur || sedangTutup || menus.length === 0) ? (
+          <div className={`alert text-center mt-4 ${ libur ? 'alert-secondary' : sedangTutup ? 'alert-danger' : 'alert-warning'}`}>
+            {libur
+              ? 'Warung sedang libur hari ini'
+              : sedangTutup
               ? 'Warung saat ini tutup. Silakan kembali lagi sesuai jam operasional.'
               : 'Belum ada menu yang tersedia hari ini.'}
           </div>

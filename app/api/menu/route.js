@@ -6,16 +6,13 @@ export async function GET() {
     .from('menu') // pastikan ini nama tabel benar persis
     .select('*');
 
-  console.log("📦 DATA:", data);
-  console.log("❌ ERROR:", error);
-
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 
   const { data: pengaturan, error: err2 } = await supabase
     .from('pengaturan')
-    .select('updated_at')
+    .select('updated_at, libur')
     .eq('id', 1)
     .single();
     
@@ -26,16 +23,14 @@ export async function GET() {
   return Response.json({
     items: data ?? [],
     updatedAt: pengaturan?.updated_at ?? null,
+    libur: pengaturan?.libur ?? false,
   });
 
 }
 
 
-
 export async function PUT(request) {
-  const { items } = await request.json();
-
-  console.log("🔄 DITERIMA UNTUK UPDATE:", items);
+  const { items, libur } = await request.json();
 
   const results = [];
 
@@ -60,10 +55,17 @@ export async function PUT(request) {
     return Response.json({ error: 'Gagal memperbarui data' }, { status: 500 });
   }
 
-  await supabase
+  const { error: updatePengaturanError } = await supabase
     .from('pengaturan')
-    .update({ updated_at: new Date().toISOString() })
+    .update({
+      updated_at: new Date().toISOString(),
+      libur: libur,
+    })
     .eq('id', 1);
+
+  if (updatePengaturanError) {
+    return Response.json({ error: updatePengaturanError.message }, { status: 500 });
+  }
 
   return Response.json({ success: true });
 }
