@@ -9,12 +9,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [libur, setLibur] = useState(false);
-
-  const sekarang = useMemo(() => {
-    return new Date(
-      new Date().toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
-    );
-  }, []);
+  const [sekarang, setSekarang] = useState(new Date());
 
   const jamSekarang = sekarang.getHours();
   const menitSekarang = sekarang.getMinutes();  
@@ -27,6 +22,14 @@ export default function Home() {
   const itemsPerPage = 8;
 
   useEffect(() => {
+    const timer = setInterval(() => {
+      setSekarang(new Date());
+    }, 60000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
     fetch('/api/menu')
       .then(res => res.json())
       .then(data => {
@@ -37,9 +40,13 @@ export default function Home() {
       });
   }, []);
 
-  function waktuRelatif(waktu) {
-    const updated = new Date(waktu);
-    const selisihDetik = Math.floor((sekarang - updated) / 1000);
+  function waktuRelatif(updatedAt) {
+    const updated = new Date(updatedAt); // dari Supabase (UTC)
+    const now = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
+    );
+
+    const selisihDetik = Math.floor((now - updated) / 1000);
 
     const hari = Math.floor(selisihDetik / 86400);
     const jam = Math.floor((selisihDetik % 86400) / 3600);
@@ -51,6 +58,7 @@ export default function Home() {
     if (hari === 1) return 'kemarin';
     return `${hari} hari yang lalu`;
   }
+
 
 
 
