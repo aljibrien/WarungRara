@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Navbar from '@/components/navbar';
 import Image from 'next/image';
 
@@ -9,7 +9,12 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const sekarang = new Date();
+  const sekarang = useMemo(() => {
+    return new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
+    );
+  }, []);
+
   const jamSekarang = sekarang.getHours();
   const menitSekarang = sekarang.getMinutes();  
   
@@ -30,6 +35,23 @@ export default function Home() {
       });
   }, []);
 
+  function waktuRelatif(waktu) {
+    const updated = new Date(waktu);
+    const selisihDetik = Math.floor((sekarang - updated) / 1000);
+
+    const hari = Math.floor(selisihDetik / 86400);
+    const jam = Math.floor((selisihDetik % 86400) / 3600);
+    const menit = Math.floor((selisihDetik % 3600) / 60);
+
+    if (selisihDetik < 60) return 'baru saja';
+    if (menit < 60) return `${menit} menit yang lalu`;
+    if (jam < 24) return `${jam} jam yang lalu`;
+    if (hari === 1) return 'kemarin';
+    return `${hari} hari yang lalu`;
+  }
+
+
+
   // ✅ Filter data berdasarkan search term
   const filteredMenus = menus.filter(menu =>
     menu.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,13 +64,7 @@ export default function Home() {
     currentPage * itemsPerPage
   );
 
-  const formatWaktu = updatedAt
-    ? new Intl.DateTimeFormat('id-ID', {
-        dateStyle: 'long',
-        timeStyle: 'short',
-        timeZone: 'Asia/Makassar',
-      }).format(new Date(updatedAt))
-    : '';
+  const formatWaktu = updatedAt ? waktuRelatif(updatedAt) : '';
 
     let statusWarung = '';
     let warnaStatus = '';
@@ -60,8 +76,8 @@ export default function Home() {
       statusWarung = 'Warung BELUM BUKA (08:30 - 17:00)';
       warnaStatus = '#ffc107'; // kuning
     } else if (menus.length === 0) {
-      statusWarung = 'Warung TUTUP (Menu Habis/Tidak Ada)';
-      warnaStatus = '#dc3545'; // merah
+      statusWarung = 'Menu Habis/Tidak Ada';
+      warnaStatus = '#ff00ddff'; // pink
     } else {
       statusWarung = 'Warung BUKA (08:30 - 17:00)';
       warnaStatus = '#28a745'; // hijau
@@ -93,7 +109,7 @@ export default function Home() {
           <div className="col-md-6 mb-4 mb-md-0">
             <h2 className="fw-bold mb-3 fs-1">Selamat Datang di <span className='text-orange'>Warung Rara</span></h2>
             <p className="mb-2">
-              Warung Rara menyediakan aneka makanan rumahan yang lezat dan terjangkau, cocok untuk makan siang, sarapan, maupun makan malam. Nikmati cita rasa masakan khas rumahan dengan harga bersahabat!
+              Warung Rara menyediakan aneka makanan rumahan yang lezat dan terjangkau, cocok untuk makan siang, dan sarapan pagi. Nikmati cita rasa masakan khas rumahan dengan harga bersahabat!
             </p>
 
             {/* Ikon Media Sosial */}
@@ -132,7 +148,7 @@ export default function Home() {
       <div className="container py-4" id="menu">
         <h3 className="mb-3 fw-bold text-orange">Menu Tersedia Hari Ini</h3>
         <hr className="w-25" />
-        <small className="text-info d-flex justify-content-end">{formatWaktu}</small>
+        <small className="text-info d-flex justify-content-end">Updated : {formatWaktu || 'Tidak Diketahui'}</small>
 
         {/* ✅ Input pencarian */}
         <div className="row mt-3">
