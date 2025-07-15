@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminNavbar from '../../../components/adminNavbar';
 import Image from 'next/image';
 
 export default function AdminDashboard() {
@@ -18,6 +17,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [libur, setLibur] = useState(false);
+  const [habisSemua, setHabisSemua] = useState(false);
   const [originalMenus, setOriginalMenus] = useState([]);
 
   const formatWaktu = (waktuString) =>
@@ -50,6 +50,7 @@ export default function AdminDashboard() {
         setOriginalMenus(data.items ?? []);
         setUpdatedAt(data.updatedAt ?? null);
         setLibur(data.libur);
+        setHabisSemua(data.habisSemua ?? false);
       } catch (err) {
         console.error("❌ Gagal fetch menu:", err);
       } finally {
@@ -83,15 +84,17 @@ export default function AdminDashboard() {
     });
 
     let liburBerubah = false;
+    let habisBerubah = false;
     try {
       const latest = await fetch('/api/menu').then(res => res.json());
       liburBerubah = latest.libur !== libur;
+      habisBerubah = latest.habisSemua !== habisSemua;
     } catch (err) {
       console.error("Gagal cek status libur terbaru:", err);
     }
 
     // ✅ Jika tidak ada yang berubah
-    if (menuBerubah.length === 0 && !liburBerubah) {
+    if (menuBerubah.length === 0 && !liburBerubah && !habisBerubah) {
       setShowModal({
         show: true,
         message: "Tidak ada perubahan yang disimpan.",
@@ -109,7 +112,7 @@ export default function AdminDashboard() {
     const res = await fetch('/api/menu', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: menuBerubah, libur }),
+      body: JSON.stringify({ items: menuBerubah, libur, habisSemua }),
     });
 
     const result = await res.json();
@@ -157,6 +160,54 @@ export default function AdminDashboard() {
         <h3>Dashboard Admin</h3>
         <p>Update terakhir: {formatWaktu(updatedAt)}</p>
 
+        <div className="row mt-4">
+          <div className="col-auto text-center">
+            <div className="form-check form-switch d-flex flex-column align-items-center">
+              <input
+                className={`form-check-input mb-1 ${libur ? 'switch-danger' : ''}`}
+                type="checkbox"
+                role="switch"
+                id="liburSwitch"
+                checked={libur}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setLibur(checked);
+                  if (checked) setHabisSemua(false); // auto-uncheck habis
+                }}
+              />
+              <label
+                className={`form-check-label fw-semibold ${libur ? 'text-danger' : 'text-secondary'}`}
+                htmlFor="liburSwitch"
+              >
+                <i className="bi bi-calendar-x me-1"></i>Libur
+              </label>
+            </div>
+          </div>
+
+          <div className="col-auto text-center">
+            <div className="form-check form-switch d-flex flex-column align-items-center">
+              <input
+                className="form-check-input mb-1"
+                type="checkbox"
+                role="switch"
+                id="habisSwitch"
+                checked={habisSemua}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setHabisSemua(checked);
+                  if (checked) setLibur(false); // auto-uncheck libur
+                }}
+              />
+              <label
+                className={`form-check-label fw-semibold ${habisSemua ? 'text-info' : 'text-secondary'}`}
+                htmlFor="habisSwitch"
+              >
+                <i className="bi bi-emoji-frown me-1"></i>Habis
+              </label>
+            </div>
+          </div>
+        </div>
+
         <div className="row">
           <div className="col-md-6">
             <input
@@ -167,19 +218,6 @@ export default function AdminDashboard() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-        </div>
-
-        <div className="form-check mt-3">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            id="liburCheckbox"
-            checked={libur}
-            onChange={(e) => setLibur(e.target.checked)}
-          />
-          <label className="form-check-label" htmlFor="liburCheckbox">
-            Warung Libur Hari Ini
-          </label>
         </div>
 
         <div className="scroll-x">

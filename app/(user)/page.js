@@ -8,6 +8,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [libur, setLibur] = useState(false);
+  const [habisSemua, setHabisSemua] = useState(false);
   const [sekarang, setSekarang] = useState(new Date());
 
   const jamSekarang = sekarang.getHours();
@@ -89,8 +90,11 @@ export default function Home() {
     } else if (sebelumBuka) {
       statusWarung = 'Warung BELUM BUKA (08:30 - 17:00)';
       warnaStatus = '#ffc107'; // kuning
+    } else if (habisSemua) {
+      statusWarung = 'Menu Habis Hari Ini';
+      warnaStatus = '#0dcaf0'; // biru muda
     } else if (menus.length === 0) {
-      statusWarung = 'Menu Habis/Tidak Ada';
+      statusWarung = 'Belum Ada Menu';
       warnaStatus = '#ff00ddff'; // pink
     } else {
       statusWarung = 'Warung BUKA (08:30 - 17:00)';
@@ -178,15 +182,17 @@ export default function Home() {
           </div>
         </div>
 
-        {(libur || sedangTutup || menus.length === 0) ? (
-          <div className={`alert text-center mt-4 ${ libur ? 'alert-secondary' : sedangTutup ? 'alert-danger' : 'alert-warning'}`}>
+        {(libur || sedangTutup || habisSemua || menus.length === 0) ? (
+          <div className={`alert text-center mt-4 ${ libur ? 'alert-secondary' : sedangTutup ? 'alert-danger' : habisSemua ? 'alert-info' : 'alert-warning'}`}>
             {libur
               ? 'Warung sedang libur hari ini'
               : sedangTutup
               ? 'Warung saat ini tutup. Silakan kembali lagi sesuai jam operasional.'
-              : 'Belum ada menu yang tersedia hari ini.'}
+              : habisSemua
+              ? 'Menu hari ini sudah habis semua.'
+              : 'Belum ada menu yang di updated.'}
           </div>
-          ) : (
+        ) : (
           <>
             <div className="row mt-3">
               {currentMenus.map(menu => (

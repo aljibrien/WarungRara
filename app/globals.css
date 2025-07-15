@@ -35,12 +35,6 @@ a {
   color: inherit;
   text-decoration: none;
 }
-/* 
-.hover-effect:hover {
-  background-color: #a5a9ad !important;
-  color: #000;
-  text-decoration: none;
-} */
 
 .dropdown-menu {
   z-index: 1050; /* pastikan di atas navbar */
@@ -84,6 +78,14 @@ a {
   padding: 10px 0px;
   background-color: rgb(187, 37, 0);
 }
+
+/* Warna merah untuk switch aktif */
+.form-check-input.switch-danger:checked {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

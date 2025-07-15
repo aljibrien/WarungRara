@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET() {
   const { data, error } = await supabase
-    .from('menu') // pastikan ini nama tabel benar persis
+    .from('menu')
     .select('*');
 
   if (error) {
@@ -12,10 +12,10 @@ export async function GET() {
 
   const { data: pengaturan, error: err2 } = await supabase
     .from('pengaturan')
-    .select('updated_at, libur')
+    .select('updated_at, libur, habisSemua') // tambahkan habisSemua
     .eq('id', 1)
     .single();
-    
+
   if (err2) {
     return Response.json({ error: err2.message }, { status: 500 });
   }
@@ -24,26 +24,21 @@ export async function GET() {
     items: data ?? [],
     updatedAt: pengaturan?.updated_at ?? null,
     libur: pengaturan?.libur ?? false,
+    habisSemua: pengaturan?.habisSemua ?? false, // kirim ke frontend
   });
-
 }
 
-
 export async function PUT(request) {
-  const { items, libur } = await request.json();
+  const { items, libur, habisSemua } = await request.json(); // terima habisSemua dari admin
 
   const results = [];
 
   for (const item of items) {
-    console.log(`📝 Update item id=${item.id}, tampil=${item.tampil}`);
-
     const { data, error } = await supabase
       .from('menu')
       .update({ tampil: item.tampil })
       .eq('id', item.id)
       .select();
-
-    console.log("📤 Response update:", { data, error });
 
     results.push({ id: item.id, data, error });
   }
@@ -51,7 +46,6 @@ export async function PUT(request) {
   const hasError = results.some(r => r.error);
 
   if (hasError) {
-    console.error("❌ Ada error saat update:", results);
     return Response.json({ error: 'Gagal memperbarui data' }, { status: 500 });
   }
 
@@ -59,7 +53,8 @@ export async function PUT(request) {
     .from('pengaturan')
     .update({
       updated_at: new Date().toISOString(),
-      libur: libur,
+      libur,
+      habisSemua,
     })
     .eq('id', 1);
 
