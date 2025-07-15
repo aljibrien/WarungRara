@@ -70,7 +70,7 @@ export default function Navbar() {
 
       {/* Navbar Bawah (Mobile) */}
       <nav className="navbar navbar-dark bg-dark fixed-bottom d-flex d-lg-none border-top">
-        <div className="container justify-content-around py-1">
+        <div className="container justify-content-around">
 
           <Link href="/" className="text-center text-decoration-none text-white small">
             <i className="bi bi-house-door" style={{ fontSize: '20px' }}></i>

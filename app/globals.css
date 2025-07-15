@@ -24,6 +24,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -79,9 +80,23 @@ a {
 .custom-placeholder::placeholder {
   color: rgba(255, 255, 255, 0.5); /* putih semi-transparan */
 }
-
+.custom-footer{
+  padding: 10px 0px;
+  background-color: rgb(187, 37, 0);
+}
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+footer.user-layout {
+    padding-bottom: 80px;
+  }
+
+  
+@media (min-width: 992px) {
+  footer.user-layout {
+    padding-bottom: 10px;
   }
 }

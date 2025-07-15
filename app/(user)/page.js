@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
-import Navbar from '@/components/navbar';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -100,8 +99,6 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
-
       {/* Info buka/tutup warung */}
       <div className="container mt-3">
         <div className="d-flex align-items-center gap-2">

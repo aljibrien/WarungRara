@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminNavbar from './adminNavbar';
+import AdminNavbar from '../../../components/adminNavbar';
 import Image from 'next/image';
 
 export default function AdminDashboard() {
@@ -153,7 +153,6 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <AdminNavbar />
       <div className="container py-4">
         <h3>Dashboard Admin</h3>
         <p>Update terakhir: {formatWaktu(updatedAt)}</p>

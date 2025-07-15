@@ -1,9 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-// import Navbar from '@/components/navbar';
-
-const geistSans = Geist({
+import './globals.css';
+const geistSans = Geist({ 
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -14,27 +12,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Warung Rara",
-  description: "Warung Sederhana, Enak dan Murah",
+  icons: {
+    icon: [
+      {
+        url: "/logo.jpg",
+        type: "image/jpg",
+        sizes: "32x32"
+      }
+    ]
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        {/* <link rel="icon" href="/favicon.ico" /> */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {/* navbar */}
-        {/* <Navbar /> */}
-        {/* content */}
-        <main className="container pb-5">
+        <main className="container-fluid px-0">
           {children}
         </main>
-
       </body>
     </html>
   );
