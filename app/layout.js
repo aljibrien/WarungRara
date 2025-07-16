@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         {/* <link rel="icon" href="/favicon.ico" /> */}
+        <meta name="google-site-verification" content="mKXBFWNAmhRB3S8oABrdK5hvziyKnF3nrSurRGan70U" />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
