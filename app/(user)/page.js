@@ -37,6 +37,7 @@ export default function Home() {
         setMenus(aktif);
         setUpdatedAt(data.updatedAt ?? null);
         setLibur(data.libur);
+        setHabisSemua(data.habisSemua);
       });
   }, []);
     
