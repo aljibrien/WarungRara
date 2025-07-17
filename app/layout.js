@@ -28,7 +28,36 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         {/* <link rel="icon" href="/favicon.ico" /> */}
+
         <meta name="google-site-verification" content="mKXBFWNAmhRB3S8oABrdK5hvziyKnF3nrSurRGan70U" />
+
+        <meta property="og:title" content="Warung Rara - Makanan Rumahan Terjangkau" />
+        <meta property="og:description" content="Makanan rumahan khas Makassar, cocok untuk sarapan dan makan siang." />
+        <meta property="og:image" content="https://gadderara.vercel.app/logo.jpg" />
+        <meta property="og:url" content="https://gadderara.vercel.app" />
+        <meta property="og:type" content="website" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Warung Rara - Makanan Rumahan Terjangkau" />
+        <meta name="twitter:description" content="Aneka lauk dan nasi khas rumahan." />
+        <meta name="twitter:image" content="https://gadderara.vercel.app/logo.jpg" />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Warung Rara",
+              url: "https://gadderara.vercel.app",
+              logo: "https://gadderara.vercel.app/logo.jpg",
+              sameAs: [
+                "https://www.instagram.com/warungraraa"
+              ]
+            }),
+          }}
+        />
+
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"

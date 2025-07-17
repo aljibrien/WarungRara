@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 export default function Home() {
-  const [menus, setMenus] = useState([]);
   const [updatedAt, setUpdatedAt] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [libur, setLibur] = useState(false);
   const [habisSemua, setHabisSemua] = useState(false);
   const [sekarang, setSekarang] = useState(new Date());
+  const [menus, setMenus] = useState([]);
 
   const jamSekarang = sekarang.getHours();
   const menitSekarang = sekarang.getMinutes();  
@@ -67,8 +67,7 @@ export default function Home() {
 
   // ✅ Filter data berdasarkan search term
   const filteredMenus = menus.filter(menu =>
-    menu.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    menu.deskripsi.toLowerCase().includes(searchTerm.toLowerCase())
+    menu.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);

@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 export default function AdminDashboard() {
   const [menus, setMenus] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [updatedAt, setUpdatedAt] = useState('');
@@ -148,9 +149,16 @@ export default function AdminDashboard() {
 
   if (loading) return <div className="p-4">Memuat data...</div>;
 
+  const itemsPerPage = 10;
   const filteredMenus = menus.filter(menu =>
-    menu.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    menu.deskripsi?.toLowerCase().includes(searchTerm.toLowerCase())
+    menu.nama.toLowerCase().includes(searchTerm.toLowerCase())
+
+  );
+
+  const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
+  const currentMenus = filteredMenus.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
 
@@ -215,7 +223,10 @@ export default function AdminDashboard() {
               className="form-control bg-dark text-white border-secondary custom-placeholder mt-3"
               placeholder="Cari menu..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // ✅ reset ke halaman pertama saat pencarian berubah
+              }}
             />
           </div>
         </div>
@@ -231,7 +242,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className='table-dark'>
-              {filteredMenus.map((menu, index) => (
+              {currentMenus.map((menu, index) => (
                 <tr key={menu.id}>
                   <td>
                     <select
@@ -259,7 +270,40 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
+        {/* Pagination */}
+        <nav>
+          <ul className="pagination justify-content-end mt-3">
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => setCurrentPage(1)}>First</button>
+            </li>
 
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>&laquo;</button>
+            </li>
+
+            {[
+              currentPage - 1,
+              currentPage,
+              currentPage + 1
+            ]
+              .filter((page) => page >= 1 && page <= totalPages) // hanya yang valid
+              .map((page) => (
+                <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
+                  <button className="page-link" onClick={() => setCurrentPage(page)}>
+                    {page}
+                  </button>
+                </li>
+            ))}
+
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>&raquo;</button>
+            </li>
+
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => setCurrentPage(totalPages)}>Last</button>
+            </li>
+          </ul>
+        </nav>
         <div className="d-flex flex-wrap gap-2 mt-3">
           <button className="btn btn-warning" onClick={handleHideAll}>
             Jgn Tampilkan Semua
@@ -279,18 +323,20 @@ export default function AdminDashboard() {
           </button>
         </div>
       </div>
-        {/* ✅ Modal Bootstrap dinamis */}
-        {showModal.show && (
-          <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
-            <div className="modal-dialog modal-dialog-centered">
-              <div className={`modal-content bg-${showModal.type} text-white`}>
-                <div className="modal-body text-center py-4">
-                  <h5 className="mb-0">{showModal.message}</h5>
-                </div>
+      
+      
+      {/* ✅ Modal Bootstrap dinamis */}
+      {showModal.show && (
+        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className={`modal-content bg-${showModal.type} text-white`}>
+              <div className="modal-body text-center py-4">
+                <h5 className="mb-0">{showModal.message}</h5>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </>
   );
 }
