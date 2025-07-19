@@ -40,13 +40,11 @@ export default function AdminDashboard() {
       }
     };
 
-    checkLogin();
-    
     const fetchMenu = async () => {
       try {
         const res = await fetch('/api/menu');
         const data = await res.json();
-
+        
         setMenus(data.items ?? []);
         setOriginalMenus(data.items ?? []);
         setUpdatedAt(data.updatedAt ?? null);
@@ -59,8 +57,36 @@ export default function AdminDashboard() {
       }
     };
 
+    checkLogin();
     fetchMenu();
   }, []);
+
+  const hasAutoResetRef = useRef(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const jam = now.getHours();
+      const menit = now.getMinutes();
+
+      if (jam === 17 && menit === 0 && habisSemua === true && !hasAutoResetRef.current) {
+        hasAutoResetRef.current = true;
+        setHabisSemua(false);
+        console.log("✅ Auto-reset habisSemua jam 17:00");
+
+        fetch('/api/menu', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: [], libur, habisSemua: false }),
+        }).then(res => res.json())
+          .then(data => console.log("📝 Auto-save berhasil:", data))
+          .catch(err => console.error("❌ Auto-save gagal:", err));
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [habisSemua, libur]);
+
 
   const handleChangeTampil = (id, value) => {
     const updatedMenus = menus.map(menu =>
@@ -106,8 +132,6 @@ export default function AdminDashboard() {
         setShowModal({ show: false, message: '', type: '' });
         setIsSaving(false);
       }, 2000);
-
-      return () => clearTimeout(timeoutId);
     }
 
     const res = await fetch('/api/menu', {

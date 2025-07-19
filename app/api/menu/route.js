@@ -29,7 +29,7 @@ export async function GET() {
 }
 
 export async function PUT(request) {
-  const { items, libur, habisSemua } = await request.json(); // terima habisSemua dari admin
+  const { items = [], libur, habisSemua } = await request.json();
 
   const results = [];
 
