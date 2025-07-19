@@ -34,10 +34,10 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         const aktif = data.items.filter(item => item.tampil);
-        setMenus(aktif);
         setUpdatedAt(data.updatedAt ?? null);
         setLibur(data.libur);
         setHabisSemua(data.habisSemua);
+        setMenus(aktif);
       });
   }, []);
     
@@ -94,7 +94,7 @@ export default function Home() {
       statusWarung = 'Menu Habis Hari Ini';
       warnaStatus = '#0dcaf0'; // biru muda
     } else if (menus.length === 0) {
-      statusWarung = 'Belum Ada Menu';
+      statusWarung = 'Warung Buka (Menu Blm di Updated)';
       warnaStatus = '#ff00ddff'; // pink
     } else {
       statusWarung = 'Warung BUKA (08:30 - 17:00)';

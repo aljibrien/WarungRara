@@ -149,7 +149,7 @@ export default function AdminDashboard() {
 
   if (loading) return <div className="p-4">Memuat data...</div>;
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
   const filteredMenus = menus.filter(menu =>
     menu.nama.toLowerCase().includes(searchTerm.toLowerCase())
 
@@ -180,7 +180,8 @@ export default function AdminDashboard() {
                 onChange={(e) => {
                   const checked = e.target.checked;
                   setLibur(checked);
-                  if (checked) setHabisSemua(false); // auto-uncheck habis
+                  if (checked) setHabisSemua(false); // auto-uncheck habis\
+                  handleHideAll();
                 }}
               />
               <label
@@ -204,6 +205,7 @@ export default function AdminDashboard() {
                   const checked = e.target.checked;
                   setHabisSemua(checked);
                   if (checked) setLibur(false); // auto-uncheck libur
+                  handleHideAll();
                 }}
               />
               <label
