@@ -17,14 +17,17 @@ export default function Home() {
   // Warung buka jam 08:30 dan tutup jam 17:00
   const sebelumBuka = (jamSekarang >= 6 && jamSekarang < 8) || (jamSekarang === 8 && menitSekarang < 30);
   const setelahTutup = jamSekarang >= 17;
-  const sedangTutup = sebelumBuka || setelahTutup;
+  const sedangTutup = jamSekarang < 6 || sebelumBuka || setelahTutup;
 
   const itemsPerPage = 8;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSekarang(new Date());
-    }, 60000);
+    const makassarTime = new Date(
+        new Date().toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
+      );
+      setSekarang(makassarTime);
+    }, 60000); // update per menit
 
     return () => clearInterval(timer);
   }, []);
