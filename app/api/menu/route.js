@@ -2,13 +2,16 @@
 import { supabase } from '@/lib/supabase';
 
 export async function GET() {
-  const { data, error } = await supabase
-    .from('menu')
-    .select('*');
+  const { data, error } = await supabase.from('menu').select('*');
 
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
+
+  const makassarTime = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
+  );
+  const jam = makassarTime.getHours();
 
   const { data: pengaturan, error: err2 } = await supabase
     .from('pengaturan')
@@ -20,11 +23,22 @@ export async function GET() {
     return Response.json({ error: err2.message }, { status: 500 });
   }
 
+  // RESET otomatis jika sudah jam ≥ 17 dan habisSemua masih true
+  if (jam >= 17 && pengaturan?.habisSemua === true) {
+    await supabase
+      .from('pengaturan')
+      .update({
+        habisSemua: false,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', 1);
+  }
+
   return Response.json({
     items: data ?? [],
     updatedAt: pengaturan?.updated_at ?? null,
     libur: pengaturan?.libur ?? false,
-    habisSemua: pengaturan?.habisSemua ?? false, // kirim ke frontend
+    habisSemua: jam >= 17 ? false : pengaturan?.habisSemua ?? false,
   });
 }
 
