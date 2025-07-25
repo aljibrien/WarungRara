@@ -27,18 +27,26 @@ export async function GET() {
   if (jam >= 17 && pengaturan?.habisSemua === true) {
     await supabase
       .from('pengaturan')
-      .update({
-        habisSemua: false,
-        updated_at: new Date().toISOString(),
-      })
+      .update({habisSemua: false})
       .eq('id', 1);
+
+    // refresh data pengaturan
+    const { data: pengaturanBaru } = await supabase
+      .from('pengaturan')
+      .select('habisSemua')
+      .eq('id', 1)
+      .single();
+
+    if (pengaturanBaru) {
+      pengaturan.updated_at = pengaturanBaru.updated_at;
+    }
   }
 
   return Response.json({
     items: data ?? [],
     updatedAt: pengaturan?.updated_at ?? null,
     libur: pengaturan?.libur ?? false,
-    habisSemua: jam >= 17 ? false : pengaturan?.habisSemua ?? false,
+    habisSemua: pengaturan?.habisSemua ?? false,
   });
 }
 
