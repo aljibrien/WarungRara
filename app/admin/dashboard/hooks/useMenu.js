@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 
 export function useMenu() {
@@ -34,14 +33,13 @@ export function useMenu() {
       return o && o.tampil !== m.tampil;
     });
 
-    // ✅ INI PENTING
     if (menuBerubah.length === 0) {
       throw new Error('NO_CHANGES');
     }
 
     setIsSaving(true);
 
-    const res = await fetch('/api/menu', {
+    const res = await fetch('/api/menu/simpan-perubahan', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

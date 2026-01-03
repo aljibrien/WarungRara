@@ -6,7 +6,7 @@ export default function MenuEditModal({
   show,
   onClose,
   onSubmit,
-  menu, // 👈 data menu yang mau diedit
+  menu,
 }) {
   const [form, setForm] = useState({
     nama: '',
@@ -52,7 +52,7 @@ export default function MenuEditModal({
 
     onSubmit({
       ...form,
-      id: menu.id, // 👈 penting buat update
+      id: menu.id,
     });
   };
 
