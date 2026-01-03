@@ -42,6 +42,8 @@ export default function RootLayout({ children }) {
         <meta name="twitter:description" content="Aneka lauk dan nasi khas rumahan." />
         <meta name="twitter:image" content="https://gadderara.vercel.app/logo.jpg" />
 
+        <meta name="theme-color" content="#000000" />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

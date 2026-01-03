@@ -197,28 +197,34 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <div className="row mt-3">
-              {currentMenus.map(menu => (
-                <div className="col-md-3 mb-3" key={menu.id}>
-                  <div className="card h-100 text-white bg-dark shadow-sm hover-lift">
-                    <Image
-                      src={menu.gambar}
-                      alt={menu.nama}
-                      width={300}         // sesuaikan dengan kebutuhan layout kamu
-                      height={200}        // pastikan aspect ratio sesuai dengan gambar
-                      className="card-img-top"
-                    />
-                    <div className="card-body">
-                      <h5 className="card-title fw-bold text-danger">{menu.nama}</h5>
-                      <p className="card-text">{menu.deskripsi}</p>
-                      <a className="fw-bold bg-warning text-dark rounded-pill px-2 py-1">
-                        Rp {menu.harga.toLocaleString()}
-                      </a>
-                    </div>
-                  </div>
+             {filteredMenus.length === 0 ? (
+                <div className="alert alert-warning text-center mt-4">
+                  Menu tidak tersedia 😅
                 </div>
-              ))}
-            </div>
+              ) : (
+                <div className="row mt-3">
+                  {currentMenus.map(menu => (
+                    <div className="col-md-3 mb-3" key={menu.id}>
+                      <div className="card h-100 text-white bg-dark shadow-sm hover-lift">
+                        <Image
+                          src={menu.gambar}
+                          alt={menu.nama}
+                          width={300}
+                          height={200}
+                          className="card-img-top"
+                        />
+                        <div className="card-body">
+                          <h5 className="card-title fw-bold text-danger">{menu.nama}</h5>
+                          <p className="card-text">{menu.deskripsi}</p>
+                          <a className="fw-bold bg-warning text-dark rounded-pill px-2 py-1">
+                            Rp {menu.harga.toLocaleString()}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
             {/* Pagination */}
             <nav className="mt-4">
