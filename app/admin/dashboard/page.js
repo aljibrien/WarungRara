@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMenu } from './hooks/useMenu';
 import MenuToolbar from './components/MenuToolbar';
@@ -15,6 +15,13 @@ import { useMenuActions } from './hooks/useMenuActions';
 
 export default function AdminDashboard() {
   const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/auth/check')
+      .then(res => {
+        if (!res.ok) router.replace('/admin/login');
+      });
+  }, []);
   
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);

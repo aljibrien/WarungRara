@@ -19,7 +19,12 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await res.json(); // << error di sini jika response kosong
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        // aman jika response kosong
+      }
 
       if (res.ok) {
         router.push('/admin/dashboard');
@@ -27,10 +32,11 @@ export default function LoginPage() {
         setError(data.error || 'Login gagal');
       }
     } catch (err) {
-      setError('Terjadi kesalahan pada server.');
       console.error('Login error:', err);
+      setError('Terjadi kesalahan pada server.');
     }
   };
+
 
   return (
     <div className="container mt-5" style={{ maxWidth: '400px' }}>

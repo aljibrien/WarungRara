@@ -2,7 +2,7 @@
 import AdminNavbar from '@/components/adminNavbar';
 
 export const metadata = {
-  title: "Admin - Warung Rara",
+  title: "Warung Rara | Admin",
   description: "Halaman Admin untuk mengelola menu dan status warung"
 };
 
