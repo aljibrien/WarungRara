@@ -203,26 +203,42 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="row mt-3">
-                  {currentMenus.map(menu => (
-                    <div className="col-md-3 mb-3" key={menu.id}>
-                      <div className="card h-100 text-white bg-dark shadow-sm hover-lift">
-                        <Image
-                          src={menu.gambar}
-                          alt={menu.nama}
-                          width={300}
-                          height={200}
-                          className="card-img-top"
-                        />
-                        <div className="card-body">
-                          <h5 className="card-title fw-bold text-danger">{menu.nama}</h5>
-                          <p className="card-text">{menu.deskripsi}</p>
-                          <a className="fw-bold bg-warning text-dark rounded-pill px-2 py-1">
-                            Rp {menu.harga.toLocaleString()}
-                          </a>
+                  {currentMenus.map(menu => {
+                    const imgSrc =
+                      typeof menu.gambar === 'string' &&
+                      (menu.gambar.startsWith('/'))
+                        ? menu.gambar
+                        : '/default1.jpg';
+
+                    return (
+                      <div className="col-md-3 mb-3" key={menu.id}>
+                        <div className="card h-100 text-white bg-dark shadow-sm hover-lift">
+                          <div className="image-wrapper">
+                            <Image
+                              src={imgSrc}
+                              alt={menu.nama}
+                              fill
+                              className="menu-img"
+                              sizes="(max-width: 768px) 100vw, 25vw"
+                            />
+                          </div>
+
+                          <div className="card-body d-flex flex-column">
+                            <h5 className="card-title fw-bold text-danger">{menu.nama}</h5>
+
+                            {/* deskripsi biar ngisi ruang, harga tetap nempel bawah */}
+                            <p className="card-text mb-3">{menu.deskripsi}</p>
+
+                            {/* ✅ dorong ke bawah */}
+                            <span className="mt-auto fw-bold bg-warning text-dark rounded-pill px-2 py-1 align-self-start">
+                              Rp {Number(menu.harga || 0).toLocaleString('id-ID')}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
+
                 </div>
               )}
 
