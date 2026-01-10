@@ -43,6 +43,12 @@ export default function Home() {
         setMenus(aktif);
       });
   }, []);
+
+  useEffect(() => {
+    const el = document.getElementById('menu');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [currentPage]);
+
     
   function waktuRelatif(updatedAt) {
     if (!updatedAt) return '';
@@ -246,19 +252,22 @@ export default function Home() {
             <nav className="mt-4">
               <ul className="pagination justify-content-end">
                 <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                  <button className="page-link" 
+                  onClick={() => setCurrentPage(currentPage - 1)}>
                     Previous
                   </button>
                 </li>
                 {Array.from({ length: totalPages }, (_, i) => (
                   <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                    <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
+                    <button className="page-link" 
+                    onClick={() => setCurrentPage(i + 1)}>
                       {i + 1}
                     </button>
                   </li>
                 ))}
                 <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                  <button className="page-link" 
+                  onClick={() => setCurrentPage(currentPage + 1)}>
                     Next
                   </button>
                 </li>
