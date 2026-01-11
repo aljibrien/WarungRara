@@ -97,7 +97,7 @@ export default function Home() {
       statusWarung = 'Warung TUTUP';
       warnaStatus = '#dc3545'; // merah
     } else if (sebelumBuka) {
-      statusWarung = 'Warung BELUM BUKA (08:30 - 17:00)';
+      statusWarung = 'Sedang Persiapan Buka (06:00 - 08:30)';
       warnaStatus = '#ffc107'; // kuning
     } else if (habisSemua) {
       statusWarung = 'Menu Habis Hari Ini';
