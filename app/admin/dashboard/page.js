@@ -1,48 +1,82 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMenu } from './hooks/useMenu';
-import MenuToolbar from './components/MenuToolbar';
-import MenuTable from './components/MenuTable';
-import StatusSwitch from './components/StatusSwitch';
-import Pagination from './components/Pagination';
-import MenuCreateModal from './components/CreateModal';
-import MenuEditModal from './components/EditModal';
-import DeleteModal from './components/DeleteModal';
-import { useMenuActions } from './hooks/useMenuActions';
-
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useMenu } from "./hooks/useMenu";
+import MenuToolbar from "./components/MenuToolbar";
+import MenuTable from "./components/MenuTable";
+import StatusSwitch from "./components/StatusSwitch";
+import Pagination from "./components/Pagination";
+import MenuCreateModal from "./components/CreateModal";
+import MenuEditModal from "./components/EditModal";
+import DeleteModal from "./components/DeleteModal";
+import { useMenuActions } from "./hooks/useMenuActions";
 
 export default function AdminDashboard() {
   const router = useRouter();
+  useEffect(() => {
+    fetch("/api/auth/check").then((res) => {
+      if (!res.ok) router.replace("/admin/login");
+    });
+  }, []);
+
+  const sudahResetHariIniRef = useRef(false);
 
   useEffect(() => {
-    fetch('/api/auth/check')
-      .then(res => {
-        if (!res.ok) router.replace('/admin/login');
-      });
+    const tick = async () => {
+      const wita = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Makassar" })
+      );
+
+      const jam = wita.getHours();
+      const menit = wita.getMinutes();
+
+      // reset sekali per hari setelah tepat jam 17:00
+      if (jam === 17 && menit === 0 && !sudahResetHariIniRef.current) {
+        sudahResetHariIniRef.current = true;
+
+        await fetch("/api/menu/reset-habis", { method: "POST" });
+        setHabisSemua(false); // ✅ reset state UI
+      }
+
+      // besoknya boleh reset lagi
+      if (jam === 0 && menit === 1) {
+        sudahResetHariIniRef.current = false;
+      }
+    };
+
+    tick();
+    const id = setInterval(tick, 30_000); // cek tiap 30 detik
+    return () => clearInterval(id);
   }, []);
-  
+
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const { menus, setMenus, loading, handleChangeTampil, saveChanges, isSaving } = useMenu();
-  const { createMenu, deleteMenu , editMenu} = useMenuActions(setMenus);
-  const [searchTerm, setSearchTerm] = useState('');
+  const {
+    menus,
+    setMenus,
+    loading,
+    handleChangeTampil,
+    saveChanges,
+    isSaving,
+  } = useMenu();
+  const { createMenu, deleteMenu, editMenu } = useMenuActions(setMenus);
+  const [searchTerm, setSearchTerm] = useState("");
   const [libur, setLibur] = useState(false);
   const [habisSemua, setHabisSemua] = useState(false);
   const [showModal, setShowModal] = useState({
     show: false,
-    message: '',
-    type: '' // atau 'info', 'error', dll
+    message: "",
+    type: "", // atau 'info', 'error', dll
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const onHideAll = () => {
-    setMenus(prev => prev.map(m => ({ ...m, tampil: false })));
+    setMenus((prev) => prev.map((m) => ({ ...m, tampil: false })));
   };
 
   const handleSave = async () => {
@@ -51,35 +85,34 @@ export default function AdminDashboard() {
 
       setShowModal({
         show: true,
-        message: '✅ Perubahan berhasil disimpan',
-        type: 'success',
+        message: "✅ Perubahan berhasil disimpan",
+        type: "success",
       });
     } catch (err) {
-      if (err.message === 'NO_CHANGES') {
+      if (err.message === "NO_CHANGES") {
         setShowModal({
           show: true,
-          message: 'ℹ️ Tidak ada perubahan untuk disimpan',
-          type: 'secondary',
+          message: "ℹ️ Tidak ada perubahan untuk disimpan",
+          type: "secondary",
         });
       } else {
         setShowModal({
           show: true,
-          message: '❌ Gagal menyimpan perubahan',
-          type: 'danger',
+          message: "❌ Gagal menyimpan perubahan",
+          type: "danger",
         });
       }
     }
 
     // ⏱ auto close modal
     setTimeout(() => {
-      setShowModal({ show: false, message: '', type: '' });
+      setShowModal({ show: false, message: "", type: "" });
     }, 2000);
   };
 
-  
   if (loading) return <p className="p-4">Loading...</p>;
 
-  const filteredMenus = menus.filter(m =>
+  const filteredMenus = menus.filter((m) =>
     m.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -107,19 +140,18 @@ export default function AdminDashboard() {
         setSearchTerm={setSearchTerm}
         onTambah={() => setShowCreateModal(true)}
       />
-      
+
       <MenuTable
         menus={currentMenus}
-        onEdit={menu => {
+        onEdit={(menu) => {
           setSelectedMenu(menu);
           setShowEditModal(true);
         }}
-        onDelete={menu => {
+        onDelete={(menu) => {
           setSelectedMenu(menu);
           setShowDeleteModal(true);
         }}
         onChangeTampil={handleChangeTampil}
-        
       />
 
       <Pagination
@@ -128,19 +160,18 @@ export default function AdminDashboard() {
         onPageChange={setCurrentPage}
       />
 
-      
       <div className="d-flex gap-2 mt-4">
         <button
           className="btn btn-success"
           onClick={handleSave}
           disabled={isSaving}
         >
-          {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
+          {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
 
         <button
           className="btn btn-outline-secondary"
-          onClick={() => router.push('/')}
+          onClick={() => router.push("/")}
         >
           ← Kembali
         </button>
@@ -155,24 +186,22 @@ export default function AdminDashboard() {
             setShowCreateModal(false);
             setShowModal({
               show: true,
-              message: '✅ Menu Berhasil Ditambahkan',
-              type: 'success',
+              message: "✅ Menu Berhasil Ditambahkan",
+              type: "success",
             });
           } catch (err) {
             setShowModal({
               show: true,
-              message: err.message || '❌ Gagal Menambahkan Menu',
-              type: 'danger',
+              message: err.message || "❌ Gagal Menambahkan Menu",
+              type: "danger",
             });
-
           } finally {
             setTimeout(() => {
-              setShowModal({ show: false, message: '', type: '' });
+              setShowModal({ show: false, message: "", type: "" });
             }, 3000);
           }
         }}
       />
-
 
       <MenuEditModal
         show={showEditModal}
@@ -187,17 +216,20 @@ export default function AdminDashboard() {
 
             setShowModal({
               show: true,
-              message: '✅ Menu berhasil diupdate',
-              type: 'success',
+              message: "✅ Menu berhasil diupdate",
+              type: "success",
             });
           } catch (err) {
             setShowModal({
               show: true,
-              message: err.message || '❌ Gagal update menu',
-              type: 'danger',
+              message: err.message || "❌ Gagal update menu",
+              type: "danger",
             });
           } finally {
-            setTimeout(() => setShowModal({ show: false, message: '', type: '' }), 3000);
+            setTimeout(
+              () => setShowModal({ show: false, message: "", type: "" }),
+              3000
+            );
           }
         }}
       />
@@ -214,17 +246,20 @@ export default function AdminDashboard() {
 
             setShowModal({
               show: true,
-              message: '🗑️ Menu berhasil dihapus',
-              type: 'success',
+              message: "🗑️ Menu berhasil dihapus",
+              type: "success",
             });
           } catch (err) {
             setShowModal({
               show: true,
-              message: '❌ Gagal menghapus menu',
-              type: 'danger',
+              message: "❌ Gagal menghapus menu",
+              type: "danger",
             });
           } finally {
-            setTimeout(() => setShowModal({ show: false, message: '', type: '' }), 3000);
+            setTimeout(
+              () => setShowModal({ show: false, message: "", type: "" }),
+              3000
+            );
           }
         }}
       />

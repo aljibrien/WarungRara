@@ -1,25 +1,29 @@
 // app/api/menu/reset-habis/route.js
-import { supabase } from '@/lib/supabase';
+import { supabase } from "@/lib/supabase";
+
+export async function GET() {
+  return POST();
+}
 
 export async function POST() {
   // waktu Makassar
   const makassarTime = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'Asia/Makassar' })
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Makassar" })
   );
   const jam = makassarTime.getHours();
 
   if (jam < 17) {
     return Response.json({
-      message: 'Belum waktu reset',
+      message: "Belum waktu reset",
       jam,
     });
   }
 
   // ambil status sekarang
   const { data: pengaturan, error } = await supabase
-    .from('pengaturan')
-    .select('habisSemua')
-    .eq('id', 1)
+    .from("pengaturan")
+    .select("habisSemua")
+    .eq("id", 1)
     .single();
 
   if (error) {
@@ -29,18 +33,18 @@ export async function POST() {
   // jika sudah false, tidak perlu reset
   if (!pengaturan.habisSemua) {
     return Response.json({
-      message: 'Status sudah normal, tidak perlu reset',
+      message: "Status sudah normal, tidak perlu reset",
     });
   }
 
   // reset habisSemua
   const { error: updateError } = await supabase
-    .from('pengaturan')
+    .from("pengaturan")
     .update({
       habisSemua: false,
       updated_at: new Date().toISOString(),
     })
-    .eq('id', 1);
+    .eq("id", 1);
 
   if (updateError) {
     return Response.json({ error: updateError.message }, { status: 500 });
@@ -48,6 +52,6 @@ export async function POST() {
 
   return Response.json({
     success: true,
-    message: '✅ Status habis berhasil di-reset otomatis',
+    message: "✅ Status habis berhasil di-reset otomatis",
   });
 }
