@@ -3,7 +3,7 @@ export default function StatusSwitch({
   setLibur,
   habisSemua,
   setHabisSemua,
-  onHideAll
+  onHideAll,
 }) {
   return (
     <div className="row mt-4">
@@ -11,7 +11,7 @@ export default function StatusSwitch({
       <div className="col-auto text-center">
         <div className="form-check form-switch d-flex flex-column align-items-center">
           <input
-            className={`form-check-input mb-1 ${libur ? 'switch-danger' : ''}`}
+            className={`form-check-input mb-1 ${libur ? "switch-danger" : ""}`}
             type="checkbox"
             role="switch"
             id="liburSwitch"
@@ -25,7 +25,7 @@ export default function StatusSwitch({
           />
           <label
             className={`form-check-label fw-semibold ${
-              libur ? 'text-danger' : 'text-secondary'
+              libur ? "text-danger" : "text-secondary"
             }`}
             htmlFor="liburSwitch"
           >
@@ -53,7 +53,7 @@ export default function StatusSwitch({
           />
           <label
             className={`form-check-label fw-semibold ${
-              habisSemua ? 'text-info' : 'text-secondary'
+              habisSemua ? "text-info" : "text-secondary"
             }`}
             htmlFor="habisSwitch"
           >

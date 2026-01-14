@@ -221,7 +221,7 @@ export default function Home() {
             {libur
               ? "Warung sedang libur hari ini"
               : sebelumBuka
-              ? "Warung saat ini sedang persiapan buka (06:30 - 08:30)"
+              ? "Warung saat ini sedang persiapan buka (06:00 - 08:30)"
               : sedangTutup
               ? "Warung saat ini tutup. Silakan kembali lagi sesuai jam operasional."
               : habisSemua
@@ -335,7 +335,6 @@ export default function Home() {
       <div className="container py-5" id="lokasi">
         <h3 className="mb-3 fw-bold text-orange">Lokasi Warung</h3>
         <hr className="w-25" />
-
         <p>
           <i className="bi bi-geo-alt-fill me-2 text-danger"></i>
           Antang, Kec. Manggala, Kota Makassar, Sulawesi Selatan 90234
