@@ -2,7 +2,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
+/* ================= TAMBAHAN (CART) ================= */
+import CartModal from "../../components/cart/CartModal";
+import CheckoutModal from "../../components/cart/CheckoutModal";
+import { useCart } from "../../context/CartContext";
+/* ================================================== */
+
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
   const [updatedAt, setUpdatedAt] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,6 +20,14 @@ export default function Home() {
 
   const jamSekarang = sekarang.getHours();
   const menitSekarang = sekarang.getMinutes();
+
+  /* ================= TAMBAHAN (CART) ================= */
+  const [showCart, setShowCart] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const { addToCart, cart } = useCart();
+
+  const totalQty = cart.reduce((s, i) => s + i.qty, 0);
+  /* ================================================== */
 
   // Warung buka jam 08:30 dan tutup jam 17:00
   const sebelumBuka =
@@ -26,7 +41,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setInterval(() => {
       const makassarTime = new Date(
-        new Date().toLocaleString("en-US", { timeZone: "Asia/Makassar" })
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Makassar" }),
       );
       setSekarang(makassarTime);
     }, 60000); // update per menit
@@ -35,14 +50,20 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
+
     fetch("/api/menu")
       .then((res) => res.json())
       .then((data) => {
         const aktif = data.items.filter((item) => item.tampil);
+
         setUpdatedAt(data.updatedAt ?? null);
         setLibur(data.libur);
         setHabisSemua(data.habisSemua);
         setMenus(aktif);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
@@ -70,13 +91,13 @@ export default function Home() {
 
   // ✅ Filter data berdasarkan search term
   const filteredMenus = menus.filter((menu) =>
-    menu.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    menu.nama.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
   const currentMenus = filteredMenus.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const formatWaktu = updatedAt ? waktuRelatif(updatedAt) : "";
@@ -96,9 +117,9 @@ export default function Home() {
   } else if (habisSemua) {
     statusWarung = "Menu Habis Hari Ini";
     warnaStatus = "#0dcaf0"; // biru muda
-  } else if (menus.length === 0) {
-    statusWarung = "Warung Buka (Menu Blm di Updated)";
-    warnaStatus = "#ff00ddff"; // pink
+    // } else if (menus.length === 0) {
+    //   statusWarung = "Warung Buka (Menu Blm di Updated)";
+    //   warnaStatus = "#ff00ddff";
   } else {
     statusWarung = "Warung BUKA (08:30 - 17:00)";
     warnaStatus = "#28a745"; // hijau
@@ -154,7 +175,7 @@ export default function Home() {
 
             {/* Tombol WhatsApp */}
             <a
-              href="https://wa.me/6282192974537?text=Halo%20Warung%20Rara%2C%20saya%20mau%20tanya%20menu"
+              href="https://wa.me/6289626880034?text=Halo%20Warung%20Rara%2C%20saya%20mau%20tanya%20sesuatu"
               className="btn btn-danger rounded-pill px-4 py-2"
               target="_blank"
             >
@@ -178,12 +199,29 @@ export default function Home() {
 
       {/* Menu Section */}
       <div className="container py-4" id="menu">
-        <h3 className="mb-3 fw-bold text-orange">Menu Tersedia Hari Ini</h3>
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <h3 className="mb-1 fw-bold text-orange">Menu Tersedia Hari Ini</h3>
+          </div>
+
+          {/* ==== CART BUTTON INLINE ==== */}
+          <button
+            onClick={() => setShowCart(true)}
+            className="btn btn-outline-warning rounded-pill position-relative"
+          >
+            <i className="bi bi-cart-check" /> Cart
+            {totalQty > 0 && (
+              <span className="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                {totalQty}
+              </span>
+            )}
+          </button>
+        </div>
+
         <hr className="w-25" />
         <small className="text-info d-flex justify-content-end">
           Updated : {formatWaktu || "Tidak Diketahui"}
         </small>
-
         {/* ✅ Input pencarian */}
         <div className="row mt-3">
           <div className="col-md-6">
@@ -200,33 +238,44 @@ export default function Home() {
           </div>
         </div>
 
-        {libur ||
-        sedangTutup ||
-        habisSemua ||
-        sebelumBuka ||
-        menus.length === 0 ? (
+        {isLoading ? (
+          <div className="row mt-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div className="col-md-3 mb-3" key={i}>
+                <div
+                  className="card bg-secondary placeholder-glow"
+                  style={{ height: 220 }}
+                >
+                  <div className="placeholder col-12 h-100"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : libur || sedangTutup || habisSemua || sebelumBuka ? (
           <div
             className={`alert text-center mt-4 ${
               libur
                 ? "alert-secondary"
-                : sebelumBuka
-                ? "alert-warning"
-                : sedangTutup
-                ? "alert-warning"
-                : habisSemua
-                ? "alert-info"
-                : "alert-warning"
+                : sebelumBuka || sedangTutup
+                  ? "alert-warning"
+                  : habisSemua
+                    ? "alert-info"
+                    : "alert-warning"
             }`}
           >
             {libur
               ? "Warung sedang libur hari ini"
               : sebelumBuka
-              ? "Warung saat ini sedang persiapan buka (06:00 - 08:30)"
-              : sedangTutup
-              ? "Warung saat ini tutup. Silakan kembali lagi sesuai jam operasional."
-              : habisSemua
-              ? "Menu hari ini sudah habis semua."
-              : "Belum ada menu yang di updated."}
+                ? "Warung saat ini sedang persiapan buka (06:00 - 08:30)"
+                : sedangTutup
+                  ? "Warung saat ini tutup. Silakan kembali lagi sesuai jam operasional."
+                  : habisSemua
+                    ? "Menu hari ini sudah habis semua."
+                    : ""}
+          </div>
+        ) : menus.length === 0 ? (
+          <div className="alert alert-warning text-center mt-4">
+            Belum ada menu yang tersedia.
           </div>
         ) : (
           <>
@@ -265,9 +314,29 @@ export default function Home() {
                           <p className="card-text mb-3">{menu.deskripsi}</p>
 
                           {/* ✅ dorong ke bawah */}
-                          <span className="mt-auto fw-bold bg-warning text-dark rounded-pill px-2 py-1 align-self-start">
-                            Rp {Number(menu.harga || 0).toLocaleString("id-ID")}
-                          </span>
+                          <div className="mt-auto d-flex align-items-center gap-2 align-self-start">
+                            <span className="fw-bold bg-warning text-dark rounded-pill px-2 py-1">
+                              Rp{" "}
+                              {Number(menu.harga || 0).toLocaleString("id-ID")}
+                            </span>
+
+                            {/* ICON CART – TAMBAHAN SAJA */}
+                            <button
+                              className="btn btn-sm btn-outline-warning rounded-circle d-flex align-items-center justify-content-center"
+                              style={{ width: 32, height: 32 }}
+                              disabled={sedangTutup || libur || habisSemua}
+                              onClick={() =>
+                                addToCart({
+                                  id: menu.id,
+                                  nama: menu.nama,
+                                  harga: menu.harga,
+                                })
+                              }
+                              title="Tambah ke cart"
+                            >
+                              <i className="bi bi-cart-plus"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -327,6 +396,21 @@ export default function Home() {
                 </li>
               </ul>
             </nav>
+            {/* ================= CART & CHECKOUT MODAL ================= */}
+
+            {showCart && (
+              <CartModal
+                onClose={() => setShowCart(false)}
+                onCheckout={() => {
+                  setShowCart(false);
+                  setShowCheckout(true);
+                }}
+              />
+            )}
+
+            {showCheckout && (
+              <CheckoutModal onClose={() => setShowCheckout(false)} />
+            )}
           </>
         )}
       </div>
