@@ -358,7 +358,7 @@ export default function Home() {
                       scrollToMenu();
                     }}
                   >
-                    Previous
+                    &lt;
                   </button>
                 </li>
                 {Array.from({ length: totalPages }, (_, i) => (
@@ -391,7 +391,7 @@ export default function Home() {
                       scrollToMenu();
                     }}
                   >
-                    Next
+                    &gt;
                   </button>
                 </li>
               </ul>
