@@ -7,6 +7,8 @@ import CartModal from "../../components/cart/CartModal";
 import CheckoutModal from "../../components/cart/CheckoutModal";
 import { useCart } from "../../context/CartContext";
 /* ================================================== */
+import PaketCard from "../../components/paket/PaketCard";
+import { paketMenu } from "../../data/paket";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +35,7 @@ export default function Home() {
   const sebelumBuka =
     (jamSekarang >= 6 && jamSekarang < 8) ||
     (jamSekarang === 8 && menitSekarang < 30);
-  const setelahTutup = jamSekarang >= 17;
+  const setelahTutup = jamSekarang >= 19;
   const sedangTutup = jamSekarang < 6 || sebelumBuka || setelahTutup;
 
   const itemsPerPage = 8;
@@ -78,9 +80,9 @@ export default function Home() {
     const jam = Math.floor((selisihDetik % 86400) / 3600);
     const menit = Math.floor((selisihDetik % 3600) / 60);
 
-    console.log("🕒 updatedAt:", updated);
-    console.log("🕒 now:", now);
-    console.log("⏱️ Selisih:", { hari, jam, menit });
+    // console.log("🕒 updatedAt:", updated);
+    // console.log("🕒 now:", now);
+    // console.log("⏱️ Selisih:", { hari, jam, menit });
 
     if (selisihDetik < 60) return "baru saja";
     if (selisihDetik < 3600) return `${menit} menit yang lalu`;
@@ -175,7 +177,7 @@ export default function Home() {
 
             {/* Tombol WhatsApp */}
             <a
-              href="https://wa.me/6289626880034?text=Halo%20Warung%20Rara%2C%20saya%20mau%20tanya%20sesuatu"
+              href="https://wa.me/6282192974537?text=Halo%20Warung%20Rara%2C%20saya%20mau%20tanya%20sesuatu"
               className="btn btn-danger rounded-pill px-4 py-2"
               target="_blank"
             >
@@ -413,6 +415,16 @@ export default function Home() {
             )}
           </>
         )}
+      </div>
+
+      <div className="container py-5" id="paket">
+        <h3 className="mb-3 fw-bold text-orange">Paket Pesanan</h3>
+        <hr className="w-25" />
+        <div className="row mt-3">
+          {paketMenu.map((paket) => (
+            <PaketCard key={paket.id} paket={paket} />
+          ))}
+        </div>
       </div>
 
       {/* Lokasi Section */}

@@ -10,13 +10,13 @@ export const metadata = {
 export default function UserLayout({ children }) {
   return (
     <CartProvider>
-      {/* navbar */}
-      <Navbar />
+      <div className="d-flex flex-column min-vh-100">
+        <Navbar />
 
-      {/* content */}
-      <main className="container pb-5">{children}</main>
+        <main className="flex-grow-1 container py-4">{children}</main>
 
-      <Footer />
+        <Footer />
+      </div>
     </CartProvider>
   );
 }

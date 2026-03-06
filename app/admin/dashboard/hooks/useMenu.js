@@ -1,5 +1,5 @@
-'use client';
-import { useState, useEffect } from 'react';
+"use client";
+import { useState, useEffect, useMemo } from "react";
 
 export function useMenu() {
   const [menus, setMenus] = useState([]);
@@ -8,9 +8,9 @@ export function useMenu() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/menu')
-      .then(res => res.json())
-      .then(data => {
+    fetch("/api/menu")
+      .then((res) => res.json())
+      .then((data) => {
         setMenus(data.items ?? []);
         setOriginalMenus(data.items ?? []);
         setLoading(false);
@@ -18,42 +18,51 @@ export function useMenu() {
   }, []);
 
   const handleChangeTampil = (id, value) => {
-    setMenus(prev =>
-      prev.map(m => (m.id === id ? { ...m, tampil: value } : m))
+    setMenus((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, tampil: value } : m)),
     );
   };
 
-  const saveChanges = async ({ libur, habisSemua }) => {
+  const hasMenuChanges = useMemo(() => {
     const originalMap = Object.fromEntries(
-      originalMenus.map(m => [m.id, m])
+      originalMenus.map((m) => [m.id, m.tampil]),
     );
 
-    const menuBerubah = menus.filter(m => {
+    return menus.some((m) => originalMap[m.id] !== m.tampil);
+  }, [menus, originalMenus]);
+
+  const saveChanges = async ({ libur, habisSemua }) => {
+    const originalMap = Object.fromEntries(originalMenus.map((m) => [m.id, m]));
+
+    const menuBerubah = menus.filter((m) => {
       const o = originalMap[m.id];
       return o && o.tampil !== m.tampil;
     });
 
-    if (menuBerubah.length === 0) {
-      throw new Error('NO_CHANGES');
-    }
-
     setIsSaving(true);
 
-    const res = await fetch('/api/menu/simpan-perubahan', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        items: menuBerubah,
-        libur,
-        habisSemua,
-      }),
-    });
+    try {
+      const res = await fetch("/api/menu/simpan-perubahan", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: menuBerubah, // boleh kosong
+          libur,
+          habisSemua,
+        }),
+      });
 
-    setIsSaving(false);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "FAILED");
+      }
 
-    if (!res.ok) throw new Error('FAILED');
-
-    setOriginalMenus(menus);
+      // 🔁 update snapshot menu SETELAH sukses
+      setOriginalMenus(menus);
+    } finally {
+      // 🔒 WAJIB: agar state nggak nyangkut
+      setIsSaving(false);
+    }
   };
 
   return {
@@ -63,5 +72,6 @@ export function useMenu() {
     isSaving,
     handleChangeTampil,
     saveChanges,
+    hasMenuChanges, // 👈 PENTING
   };
 }

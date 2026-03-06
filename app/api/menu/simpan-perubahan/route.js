@@ -1,20 +1,24 @@
-'use server';
-import { supabase } from '@/lib/supabase';
+"use server";
+import { supabase } from "@/lib/supabase";
 
 export async function PUT(request) {
   try {
-    if (!request.headers.get('content-type')?.includes('application/json')) {
+    if (!request.headers.get("content-type")?.includes("application/json")) {
       return Response.json(
-        { error: 'Content-Type harus application/json' },
-        { status: 400 }
+        { error: "Content-Type harus application/json" },
+        { status: 400 },
       );
     }
 
     const body = await request.json();
     const { items, libur = false, habisSemua = false } = body;
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return Response.json({ error: 'Tidak ada menu untuk diupdate' }, { status: 400 });
+    // items boleh kosong, tapi tetap valid
+    if (!Array.isArray(items)) {
+      return Response.json(
+        { error: "Format items tidak valid" },
+        { status: 400 },
+      );
     }
 
     // Update setiap menu tampil
@@ -23,33 +27,34 @@ export async function PUT(request) {
       if (!id) continue;
 
       const { error } = await supabase
-        .from('menu')
+        .from("menu")
         .update({ tampil })
-        .eq('id', id);
+        .eq("id", id);
 
       if (error) {
-        console.warn('Gagal update menu ID', id, error.message);
+        console.warn("Gagal update menu ID", id, error.message);
       }
     }
 
     // Update pengaturan libur & habisSemua + updated_at
     const { error: pengaturanError } = await supabase
-        .from('pengaturan')
-        .update({
-            libur,
-            habisSemua,
-            updated_at: new Date().toISOString() // ✅ set updated_at manual
-        })
-        .eq('id', 1);
-
+      .from("pengaturan")
+      .update({
+        libur,
+        habisSemua,
+        updated_at: new Date().toISOString(), // ✅ set updated_at manual
+      })
+      .eq("id", 1);
 
     if (pengaturanError) {
       return Response.json({ error: pengaturanError.message }, { status: 500 });
     }
 
     return Response.json({ success: true });
-
   } catch (err) {
-    return Response.json({ error: err.message || 'PUT massal gagal' }, { status: 500 });
+    return Response.json(
+      { error: err.message || "PUT massal gagal" },
+      { status: 500 },
+    );
   }
 }

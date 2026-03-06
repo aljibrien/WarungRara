@@ -19,8 +19,11 @@ export default function StatusSwitch({
             onChange={(e) => {
               const checked = e.target.checked;
               setLibur(checked);
-              if (checked) setHabisSemua(false);
-              onHideAll();
+
+              if (checked) {
+                setHabisSemua(false);
+                onHideAll();
+              }
             }}
           />
           <label
@@ -47,8 +50,11 @@ export default function StatusSwitch({
             onChange={(e) => {
               const checked = e.target.checked;
               setHabisSemua(checked);
-              if (checked) setLibur(false);
-              onHideAll();
+
+              if (checked) {
+                setLibur(false);
+                onHideAll();
+              }
             }}
           />
           <label

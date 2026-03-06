@@ -101,15 +101,15 @@ export default function CartModal({ onCheckout, onClose }) {
               <button
                 className="btn btn-success w-50 rounded-pill"
                 onClick={onCheckout}
-                // disabled={cart.length === 0}
-                disabled
+                disabled={cart.length === 0}
+                // disabled
               >
                 Checkout
-                <div>
+                {/* <div>
                   <small className="text-warning">
                     Tidak tersedia untuk saat ini
                   </small>
-                </div>
+                </div> */}
               </button>
             </div>
           </div>

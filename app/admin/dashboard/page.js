@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const tick = async () => {
       const wita = new Date(
-        new Date().toLocaleString("en-US", { timeZone: "Asia/Makassar" })
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Makassar" }),
       );
 
       const jam = wita.getHours();
@@ -62,6 +62,7 @@ export default function AdminDashboard() {
     handleChangeTampil,
     saveChanges,
     isSaving,
+    hasMenuChanges,
   } = useMenu();
   const { createMenu, deleteMenu, editMenu } = useMenuActions(setMenus);
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,6 +73,11 @@ export default function AdminDashboard() {
     message: "",
     type: "", // atau 'info', 'error', dll
   });
+  const [initialPengaturan, setInitialPengaturan] = useState({
+    libur: false,
+    habisSemua: false,
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -79,9 +85,53 @@ export default function AdminDashboard() {
     setMenus((prev) => prev.map((m) => ({ ...m, tampil: false })));
   };
 
+  useEffect(() => {
+    const fetchPengaturan = async () => {
+      try {
+        const res = await fetch("/api/pengaturan");
+        const data = await res.json();
+
+        setLibur(data.libur);
+        setHabisSemua(data.habisSemua);
+
+        setInitialPengaturan({
+          libur: data.libur,
+          habisSemua: data.habisSemua,
+        });
+      } catch (err) {
+        console.error("Gagal ambil pengaturan:", err);
+      }
+    };
+
+    fetchPengaturan();
+  }, []);
+
   const handleSave = async () => {
+    const pengaturanChanged =
+      initialPengaturan.libur !== libur ||
+      initialPengaturan.habisSemua !== habisSemua;
+
+    // 🟡 TIDAK ADA PERUBAHAN → JANGAN HIT API
+    if (!hasMenuChanges && !pengaturanChanged) {
+      setShowModal({
+        show: true,
+        message: "ℹ️ Tidak ada perubahan data, status tetap sinkron",
+        type: "secondary",
+      });
+
+      setTimeout(() => {
+        setShowModal({ show: false, message: "", type: "" });
+      }, 2000);
+
+      return;
+    }
+
+    // 🟢 ADA PERUBAHAN → BARU HIT API
     try {
       await saveChanges({ libur, habisSemua });
+
+      // update snapshot pengaturan
+      setInitialPengaturan({ libur, habisSemua });
 
       setShowModal({
         show: true,
@@ -89,22 +139,13 @@ export default function AdminDashboard() {
         type: "success",
       });
     } catch (err) {
-      if (err.message === "NO_CHANGES") {
-        setShowModal({
-          show: true,
-          message: "ℹ️ Tidak ada perubahan untuk disimpan",
-          type: "secondary",
-        });
-      } else {
-        setShowModal({
-          show: true,
-          message: "❌ Gagal menyimpan perubahan",
-          type: "danger",
-        });
-      }
+      setShowModal({
+        show: true,
+        message: "❌ Gagal menyimpan perubahan",
+        type: "danger",
+      });
     }
 
-    // ⏱ auto close modal
     setTimeout(() => {
       setShowModal({ show: false, message: "", type: "" });
     }, 2000);
@@ -113,14 +154,14 @@ export default function AdminDashboard() {
   if (loading) return <p className="p-4">Loading...</p>;
 
   const filteredMenus = menus.filter((m) =>
-    m.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    m.nama.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const totalPages = Math.ceil(filteredMenus.length / itemsPerPage);
 
   const currentMenus = filteredMenus.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   return (
@@ -228,7 +269,7 @@ export default function AdminDashboard() {
           } finally {
             setTimeout(
               () => setShowModal({ show: false, message: "", type: "" }),
-              3000
+              3000,
             );
           }
         }}
@@ -258,7 +299,7 @@ export default function AdminDashboard() {
           } finally {
             setTimeout(
               () => setShowModal({ show: false, message: "", type: "" }),
-              3000
+              3000,
             );
           }
         }}
