@@ -312,17 +312,14 @@ export default function Home() {
                             {menu.nama}
                           </h5>
 
-                          {/* deskripsi biar ngisi ruang, harga tetap nempel bawah */}
                           <p className="card-text mb-3">{menu.deskripsi}</p>
 
-                          {/* ✅ dorong ke bawah */}
                           <div className="mt-auto d-flex align-items-center gap-2 align-self-start">
                             <span className="fw-bold bg-warning text-dark rounded-pill px-2 py-1">
                               Rp{" "}
                               {Number(menu.harga || 0).toLocaleString("id-ID")}
                             </span>
 
-                            {/* ICON CART – TAMBAHAN SAJA */}
                             <button
                               className="btn btn-sm btn-outline-warning rounded-circle d-flex align-items-center justify-content-center"
                               style={{ width: 32, height: 32 }}
